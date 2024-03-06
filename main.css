@@ -1,0 +1,96 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #dddddd;
+    padding: 8px;
+}
+td{
+    font-size: 14px;
+}
+
+th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+/* Search container styles */
+#searchContainer {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    padding: 5vw;
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    width: calc(100% - 100px);
+    padding: 8px;
+    margin-right: 10px;
+}
+
+/* Button styles */
+button {
+    padding: 8px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+.table-wrapper{
+    margin: 0 1vw 0 1vw;
+    width: 98vw;
+}
+
+/* Responsive styles */
+@media only screen and (max-width: 600px) {
+    #searchInput {
+        width: calc(100% - 80px);
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    #searchInput {
+        width: calc(100% - 60px);
+    }
+}
+
+
+
+
+
+
+@media only screen and (max-width: 768px) {
+   
+    th {
+        font-size: 5px;
+    }
+    td{
+        font-size: 5px;
+    }
+}
