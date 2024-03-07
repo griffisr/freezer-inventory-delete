@@ -43,6 +43,11 @@
     </table>
     </div>
 
+
+
+
+
+
     <script>
         let jsonData = [];
 
@@ -102,7 +107,14 @@ function displayData(data) {
         tbody.appendChild(row);
     }
     table.appendChild(tbody);
+     // Add alternating row background color
+     const rows = table.querySelectorAll("tbody tr:nth-child(even)");
+    rows.forEach(row => {
+        row.style.backgroundColor = "#b6d2f9"; // Light gray background
+    });
 }
+
+
 
         // Function to filter table rows based on search input
         function filterTable() {
