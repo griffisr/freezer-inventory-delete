@@ -333,6 +333,7 @@ textarea {
   height: auto;
   overflow-y: auto;
   overflow-x: hidden;
+  background-color: #edededed;
 }
 
 #footer {
@@ -352,4 +353,28 @@ textarea {
 }
 .table th, .table thead td {
   vertical-align: bottom;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.add-item-button-wrapper{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+}
+
+.submit-btn{
+  width: 50%;
 }

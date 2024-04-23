@@ -13,6 +13,19 @@ if($window.width() < 768){
     }, 250);
   }
 }
+function toggleOther() {
+    var otherText = document.getElementById("otherText");
+    var otherCheckbox = document.getElementById("otherCheckbox");
+
+    // If the checkbox is checked, display the text box; otherwise, hide it
+    if (otherCheckbox.checked) {
+        otherText.style.display = "block";
+    } else {
+        otherText.style.display = "none";
+    }
+}
+
+
 
 $('#menuToggle').on('click', function(){
 

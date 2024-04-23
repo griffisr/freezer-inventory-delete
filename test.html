@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" 
+    type="image/png" 
+    href="https://s3.amazonaws.com/rileyg.me/Inventory-On-Ice/favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ioi</title>
     <link rel='stylesheet' type="text/css" href='test.css' media='all' />
 
     <link rel='dns-prefetch' href='//fonts.googleapis.com' />
@@ -11,8 +14,10 @@
     <link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
   
   
-
-  
+    <!--Initialize Firebase-->
+    <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-auth.js"></script>
  
 
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap" rel="stylesheet">
@@ -49,7 +54,7 @@
         </div>  
       
         <div id="logo" class="pull-left">
-          <span class=""><i class="fa fa-codepen"></i></span><span class="small"> COMPANY.CO</span>
+          <span class=""><i class="fa fa-codepen"></i></span><span class="small"> INVENTORY ON ICE</span>
         </div>
       
         <div id="right-nav" class="pull-right text-right vcenter">
@@ -61,23 +66,8 @@
       
       
           <div id="userPanel" class="userPanel collapse text-left">
-            <div class="form-group">
-              <select class="form-control">
-                <option>Limited Holdings</option>
-                <option>LimitedCompany</option>
-                <option>LimitedCompany&Brothers</option>
-              </select>
-            </div>
-            <select class="form-control">
-              <option>Administration Area</option>
-              <option>Managerial Area</option>
-              <option>Member Area</option>
-            </select>
-      
-            <br/>
             <p class="text-right">
-              <span>Jane Realname Doe</span><br/>
-              <span>Manager</span>
+              <span id="UserName"></span><br/>
             </p>
             <div class="text-right small">
               <a>Edit Profile</a><br/>
@@ -92,12 +82,10 @@
       
         </div>
       
-        <div id="right-tools" class="hidden-xs pull-right vcenter">
+       <!-- <div id="right-tools" class="hidden-xs pull-right vcenter">
           <span class="notif-alert display-inline vmid"><i class="fa fa-envelope fa-lg fa-fw"></i></span>
-          &nbsp;&nbsp;&nbsp;
-          <span class="display-inline vmid"><i class="fa fa-sticky-note fa-lg fa-fw"></i></span>
           &nbsp;&nbsp;&nbsp; 
-        </div>
+        </div> -->
       
       </div>
       
@@ -235,7 +223,7 @@
             <br/>
             <div>
               <button id="c-item-new" class="btn btn-success" data-toggle="content-panel" data-target="#c-item-form"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;Add Item</button>
-              <button class="btn btn-info" data-toggle="collapse" data-target="#c-item-filter-opt"><i class="fa fa-filter"></i></button>
+              <button class="btn btn-info" data-toggle="collapse" data-target="#c-item-filter-opt"><i class="fa fa-filter"></i> Filter</button>
             </div>
       
             <div id="c-item-filter" class="filter-area">
@@ -280,13 +268,12 @@
               <thead>
                 <tr>
                   <td></td>
-                  <td>Item Code</td>
                   <td>Item Name</td>
-                  <td>Translations</td>
-                  <td>Supplier</td>
                   <td>Item Type</td>
-                  <td>UOM</td>
-                  <td>Qty</td>
+                  <td>Fresh/Frozen</td>
+                  <td>Date Added</td>
+                  <td>Quantity</td>
+                  <td>Notes</td>
                   <td></td>
                 </tr>
               </thead>
@@ -300,19 +287,17 @@
 
         <!----------------Add Item---------------------------->
         <div id="c-item-form" class="content-panel">
-          <h1>New Item</h1>
-          <hr/>
-          <br/>
+          <h1>Add Item</h1>
       
       
 
           <div class="form">
       
-            <!--Tabs-->
+            <!--Tabs
             <ul class="responsive-tabs nav nav-tabs hidden-s">
               <li class="active"><a href="#i-general" data-toggle="tab">General Information</a></li>
-              <li><a href="#i-sales" data-toggle="tab">Sales Information</a></li>
-            </ul>
+              <li><a href="#i-sales" data-toggle="tab">Sales Information</a></li> 
+            </ul> -->
       
             <!--Info/Content Containers-->
             <div class="tab-content clearfix">
@@ -321,143 +306,145 @@
             <!--Tabs-->
               <div class="tab-pane active" id="i-general" class="">          
                 <div class="row">
-                  <div class="col-sm-6 ">
-                    <h4>Properties</h4>
-                    <hr/>
-      
+                  <div class="col-lg-12 ">
+                    
                     <div class="form-group">
-                      <label class="control-label">Date Added</label>
-                      <div class="input-group dt-field">
-                        <input type="text" class=" form-control" placeholder="YYYY/MM/DD"/>
-      
-                        <div class="input-group-addon">
-                          <span><i class="fa fa-calendar fa-fw"></i></span>
-                        </div>
-                      </div>
-                    </div>
-      
-                    <div class="form-group">
-                      <label class="control-label">Item Code *</label>
+                      <label class="control-label">Item Name *</label>
                       <div class="">
-                        <input type="text" class="form-control" />
+                        <input type="text" class="form-control" id="newItemName"/>
                       </div>
                     </div>  
+
+                                        <!--ITEM TYPE-->
+                                        <div class="form-group">
+                                            <label class="control-label">Item Type *</label>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                BEEF
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                STEAK
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                CHICKEN
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                VEGETABLE
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                FRUIT
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                PREPPED INGREDIENT
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                DESSERT
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                QUICK LUNCH ITEM
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                DAIRY
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                CHICKEN
+                                              </label>
+                                            </div>
+                      
+                      
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value=""id="otherCheckbox" onclick="toggleOther()">
+                                                OTHER
+                                              </label>
+                                              <div class="" id="otherText" style="display:none;">
+                                                  <input type="text" class="form-control" id="otherInput"/>
+                                                </div>
+                                            </div>
+                                          </div>
       
                     <div class="form-group">
-                      <label class="control-label">Item Type *</label>
+                      <label class="control-label">Fresh or Frozen *</label>
                       <div class="clearfix"></div>
                       <div class="radio-inline">
-                        <label class=""><input type="radio" name="itm-grp" checked /><span class="vmid">Stock</span></label>
+                        <label class=""><input type="radio" name="itm-grp" checked /><span class="vmid">Fresh</span></label>
                       </div>
                       <div class="radio-inline">
-                        <label class=""><input type="radio" name="itm-grp"/><span class="vmid">Non-Stock</span></label>
+                        <label class=""><input type="radio" name="itm-grp" id="frozen-btn"/><span class="vmid">Frozen</span></label>
                       </div>
                     </div>  
       
+
                     <div class="form-group">
-                      <label class="control-label">Available as *</label>
-                      <div class="checkbox">
-                        <label>
-                          <input type="checkbox" value="">
-                          Raw materials
-                        </label>
+                        <label class="control-label">Date Added</label>
+                        <div class="input-group dt-field">
+                          <input type="date" class=" form-control" placeholder="YYYY/MM/DD" id="dateAddedInput"/>
                       </div>
-                      <div class="checkbox">
-                        <label>
-                          <input type="checkbox" value="">
-                          Semi-finished Goods
-                        </label>
                       </div>
-                      <div class="checkbox">
-                        <label>
-                          <input type="checkbox" value="">
-                          Finished Goods
-                        </label>
-                      </div>
-                    </div>
       
       
-                    <div class="form-group">
-                      <label class="control-label">Item Group</label>
-                      <div class="col-xs-12 no-float input-group">
-                        <input type="text" class="form-control" />
-                        <div class="input-group-btn input-group-separate-btn">                  
-                          <button class="btn btn-info"><i class="fa fa-search"></i></button>
+                      <div class="form-group">
+                        <label class="control-label">Quantity</label>
+                        <div class="">
+                          <input type="text" class="form-control" id="quantityInput"/>
                         </div>
-                        <div class="clearfix"></div>
-                      </div>
-                    </div>
+                      </div>  
                     <div class="form-group">
-                      <label class="control-label">Item Category</label>
-                      <div class="col-xs-12 no-float input-group">
-                        <input type="text" class="form-control" />
-                        <div class="input-group-btn input-group-separate-btn">                  
-                          <button class="btn btn-info"><i class="fa fa-search"></i></button>
+                        <label class="control-label">Notes</label>
+                        <div class="">
+                          <textarea rows=3 id="notesTextarea"></textarea>
                         </div>
-                        <div class="clearfix"></div>
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label">Color</label>
-                      <select class="form-control combobox">
-                        <option>Red</option>
-                        <option>White</option>
-                        <option>Yellow</option>
-                        <option>Black</option>
-                        <option>Green</option>
-                        <option>Blue</option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label">SKU</label>
-                      <input type="text" class="form-control" placeholder="ITM1009"/>
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label">Barcode</label>
-                      <input type="text" class="form-control" placeholder="ITM1009"/>
-                    </div>
-                    <div class="form-group">
+                      </div>  
+                    
+
+
+                  <!--  <div class="form-group">
                       <label class="control-label">Image *</label>
                       <input type="file" />
-                    </div>
+                    </div> -->
       
                   </div>
       
-                  <div class="col-sm-6 ">
-                    <h4>Stock</h4>
-                    <hr/>
-                    <div class="form-group">
-                      <label class="control-label">
-                        Unit of Measure
-                      </label>
-                      <input class="form-control" type="text" />
-                    </div>
-                    <div class="form-group">
-                      <label class="control-label">Stock Buffer Qty</label>
-                      <p class="small">Enter 0 if no max./min. qty needed.</p>
-      
-                      <div class="form-inline">
-                        <label class="control-label">Min</label>
-                        <input class="form-control" type="text" />
-                      </div>
-      
-                      <p></p>
-      
-                      <div class="form-inline">
-                        <label class="control-label">Max</label>
-                        <input class="form-control" type="text" />
-                      </div>
-                    </div>
-                  </div>
+
                   <div class="clearfix"></div>
                 </div>
       
-                <button class="btn btn-success">Save</button>
-                &nbsp;
-                <button class="btn btn-danger">Reset</button>
+                <div class="add-item-button-wrapper">
+                    <button class="btn btn-success submit-btn" onclick="createItem()">Submit</button>
+
+                </div>
+
               </div>
       
-              <div class="tab-pane" id="i-sales">
+             <!---- <div class="tab-pane" id="i-sales">
                 <div class="row">
                   <div class="col-md-6">
                     <h4>Properties</h4>
@@ -597,7 +584,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
       
       
             </div>
@@ -606,7 +593,7 @@
         </div>
       
         <div id="footer" class="small text-center">
-          Copyright 2016. Lorem IPsum Dolor. Designed by Lipsum.
+          Copyright 2024. Designed by Riley Griffis.
         </div>
       
       </div>
@@ -615,5 +602,6 @@
       
       
     <script type="text/javascript" src="test.js"></script>
+    <script type="text/javascript" src="db-functions.js"></script>
 </body>
 </html>
