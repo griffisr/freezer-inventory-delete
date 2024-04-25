@@ -44,14 +44,12 @@ $(document).ready(function fetchAndDisplayData() {
 
           // Create an array representing a row of data
           var rowData = [
-              "",
               itemName, // Item Name
               childData.itemType, // Item Type
               childData.freshOrFrozen, // Fresh/Frozen
               childData.dateAdded, // Date Added
               childData.quantity, // Quantity
               childData.notes || "empty", // Notes
-              "",
           ];
 
           // Push the row data into the dataArray

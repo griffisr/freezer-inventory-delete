@@ -383,4 +383,7 @@ textarea {
   .nav-title{
     font-size: 60%!important;
   }
+  table td {
+    font-size: 50%!important;
+  }
 }
