@@ -25,67 +25,52 @@ else{
 }
 });
 
-/////////////////////////////Pull/Display data into table////////////////////////////
-$(document).ready( function fetchAndDisplayData() {
+
+
+
+$(document).ready(function fetchAndDisplayData() {
   // Reference to your data in the database
   var dataRef = database.ref("users/Riley");
 
-  new DataTable('#c-item-table', {
-    layout: {
-      topStart: 'info',
-      bottom: 'paging',
-      bottomStart: null,
-      bottomEnd: null
-  }
-  });
+  // Initialize array to store rows of data
+  var dataArray = [];
 
-
-   
-  
-  
   // Get the data once
   dataRef.once('value', function(snapshot) {
-    // Clear existing table rows
-    var table = document.getElementById("c-item-table");
-    table.innerHTML = "<thead><tr><td></td><td>Item Name</td><td>Item Type</td><td>Fresh/Frozen</td><td>Date Added</td><td>Quantity</td><td>Notes</td><td></td><td></td></tr></thead>";
+      // Loop through each child item
+      snapshot.forEach(function(childSnapshot) {
+          var childData = childSnapshot.val();
+          var itemName = childSnapshot.key;
 
-    let itemCount =0;
-    // Loop through each child item
-    snapshot.forEach(function(childSnapshot) {
-      var childData = childSnapshot.val();
-      var itemName = childSnapshot.key;
+          // Create an array representing a row of data
+          var rowData = [
+              "",
+              itemName, // Item Name
+              childData.itemType, // Item Type
+              childData.freshOrFrozen, // Fresh/Frozen
+              childData.dateAdded, // Date Added
+              childData.quantity, // Quantity
+              childData.notes || "empty", // Notes
+              "",
+          ];
 
-      itemCount++;
-      console.log(itemCount);
-      // Create a new row
-      var row = table.insertRow(-1);
+          // Push the row data into the dataArray
+          dataArray.push(rowData);
+      });
 
-      // Insert cells with data
-      var cell1 = row.insertCell(0);
-      var cell2 = row.insertCell(1);
-      var cell3 = row.insertCell(2);
-      var cell4 = row.insertCell(3);
-      var cell5 = row.insertCell(4);
-      var cell6 = row.insertCell(5);
-      var cell7 = row.insertCell(6);
-      var cell8 = row.insertCell(7);
-      var cell9 = row.insertCell(8);
+      // Now, the dataArray contains an array of arrays representing each row of data
+      console.log(dataArray);
 
-      // Populate cells with data
-      cell1.innerHTML = ""; // You can add any icons or buttons here
-      cell3.innerHTML = childData.itemType; // Item Type
-      cell2.innerHTML = itemName; // Item Name
-      cell4.innerHTML = childData.freshOrFrozen; // Fresh/Frozen
-      cell5.innerHTML = childData.dateAdded; // Date Added
-      cell6.innerHTML = childData.quantity; // Quantity
-      cell7.innerHTML = childData.notes || "empty"; // Notes
-      cell8.innerHTML = ""; // You can add any icons or buttons here
-    });
-
-    //Footer Logic
-    //document.getElementById('c-item-table_info').innerText = itemCount;
+      // Initialize DataTable here after data is fetched
+      new DataTable('#c-item-table', {
+          data: dataArray,
+          searching: false, // Disable searching
+          lengthChange: false // Disable length change
+      });
   });
-})
+});
+
+
 
 
 
@@ -118,7 +103,7 @@ let itemType = [];
 const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
 // Loop through each checked checkbox and add its value to the array
 checkboxes.forEach(function(checkbox) {
-  itemType.push(checkbox.nextSibling.textContent.trim());
+  itemType.push(checkbox.nextSibling.textContent.trim() + " ");
   checkbox.checked = false;
 });
 
