@@ -25,11 +25,23 @@ else{
 }
 });
 
-/////////////////////////////Pull data////////////////////////////
+/////////////////////////////Pull/Display data into table////////////////////////////
 $(document).ready( function fetchAndDisplayData() {
   // Reference to your data in the database
   var dataRef = database.ref("users/Riley");
 
+  new DataTable('#c-item-table', {
+    layout: {
+      topStart: 'info',
+      bottom: 'paging',
+      bottomStart: null,
+      bottomEnd: null
+  }
+  });
+
+
+   
+  
   
   // Get the data once
   dataRef.once('value', function(snapshot) {
@@ -71,7 +83,7 @@ $(document).ready( function fetchAndDisplayData() {
     });
 
     //Footer Logic
-    document.getElementById('c-item-table_info').innerText = itemCount;
+    //document.getElementById('c-item-table_info').innerText = itemCount;
   });
 })
 
@@ -146,49 +158,34 @@ else
   
   
 
+////////////////////////////Search List////////////////////////
 
-//------------------------- Check Out ------------------------------------------------------------
+function searchTable() {
+  // Declare variables
+  var input, filter, table, tr, td, i, txtValue;
+  input = document.getElementById("searchInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("c-item-table");
+  tr = table.getElementsByTagName("tr");
 
-function setTextOut(name){
-document.getElementById("checkOutName").value = name;
-}
-
-document.getElementById("checkOutBtn").onclick = function(){
-eventName = localStorage.getItem('eventName');
-var namel = document.getElementById("checkOutName").value;
-firebase.database().ref("users/" + localStorage.getItem('userUID') + "/events/" + eventName + "/guestList/"+namel).once('value', function(snapshot){
-  if(snapshot.val().Inside != "No")
-  {
-    if(snapshot.val().TimeIn != "n/a" && snapshot.val().TimeOut !="n/a")
-      {
-        firebase.database().ref("users/" + localStorage.getItem('userUID') + "/events/" + eventName + "/guestList/"+namel).update({
-          Inside: "No",
-          TimeBackOut: getTime(),
-        })
+  // Loop through all table rows, and hide those that don't match the search query
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td");
+    for (var j = 0; j < td.length; j++) {
+      if (td[j]) {
+        txtValue = td[j].textContent || td[j].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+          break; // Break the inner loop if match found to avoid unnecessary iterations
+        } else {
+          tr[i].style.display = "none";
+        }
       }
-      else
-      {
-        firebase.database().ref("users/" + localStorage.getItem('userUID') + "/events/" + eventName + "/guestList/"+namel).update({
-        Inside: "No",
-        TimeOut: getTime(),})
-      }
-    
-  }
-  alerts(namel, false)
-document.getElementById("checkOutName").value="";
-}
-)}
-
-
-//---------------------- Alert once checked in and out ----------------------
-function alerts(name, Boolean){
-  if(Boolean){
-    console.log(name + " has been checked in!")
-  }
-  else{
-    console.log(name + " has been checked out!")
+    }
   }
 }
+
+
 
 //-------------------------- Returns time ---------------------------
 function addZero(i) {
