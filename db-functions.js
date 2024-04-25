@@ -101,7 +101,7 @@ let itemType = [];
 const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
 // Loop through each checked checkbox and add its value to the array
 checkboxes.forEach(function(checkbox) {
-  itemType.push(checkbox.nextSibling.textContent.trim() + " ");
+  itemType.push(" " + checkbox.nextSibling.textContent.trim());
   checkbox.checked = false;
 });
 
