@@ -37,11 +37,14 @@ $(document).ready( function fetchAndDisplayData() {
     var table = document.getElementById("c-item-table");
     table.innerHTML = "<thead><tr><td></td><td>Item Name</td><td>Item Type</td><td>Fresh/Frozen</td><td>Date Added</td><td>Quantity</td><td>Notes</td><td></td><td></td></tr></thead>";
 
+    let itemCount =0;
     // Loop through each child item
     snapshot.forEach(function(childSnapshot) {
       var childData = childSnapshot.val();
       var itemName = childSnapshot.key;
 
+      itemCount++;
+      console.log(itemCount);
       // Create a new row
       var row = table.insertRow(-1);
 
@@ -66,6 +69,9 @@ $(document).ready( function fetchAndDisplayData() {
       cell7.innerHTML = childData.notes || "empty"; // Notes
       cell8.innerHTML = ""; // You can add any icons or buttons here
     });
+
+    //Footer Logic
+    document.getElementById('c-item-table_info').innerText = itemCount;
   });
 })
 

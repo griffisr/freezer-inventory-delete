@@ -12,7 +12,7 @@ if($window.width() < 768){
       'padding-left' : 0
     }, 250);
   }
-}
+} 
 function toggleOther() {
     var otherText = document.getElementById("otherText");
     var otherCheckbox = document.getElementById("otherCheckbox");
@@ -94,7 +94,7 @@ $('.content-panel').css({
   'display' : 'none'
 });
 
-$('#c-item-form').fadeIn().addClass('active');
+$('#c-item-list').fadeIn().addClass('active');
 
 $('[data-toggle=content-panel]').on('click', function(){
   var $this = $(this),
