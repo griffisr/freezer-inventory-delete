@@ -61,7 +61,7 @@ const firebaseConfig = {
         } else {
           return `<span class="item-type other">${itemType}</span>`;
         }
-      }).join("<br> <span><br><span>"); // Join them with <br> for line breaks
+      }).join("<span><span>"); // Join them with <br> for line breaks
         dataArray.push([
           itemName,
           formattedItemType,
@@ -240,6 +240,18 @@ function triggerPanelSwitch(targetPanel) {
       row.style.display = foundMatch ? "" : "none";
     });
   }
+  
+
+
+
+
+
+
+
+
+
+
+
   
   // Autocomplete with Debounce
   let debounceTimeout;

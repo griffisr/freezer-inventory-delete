@@ -242,14 +242,19 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label class="control-label">
-                      Warehouse #
+                      Filter by Item Type:
                     </label>
-                    <div class="input-group">
-                      <input type="text" class="form-control"></input>
-                    <div class="input-group-addon">
-                      <i class="fa fa-search"></i>
-                    </div>              
-                  </div>
+                    <select id="tagFilter" onchange="filterByTag()">
+                    <option value="">All</option> <!-- This option will show all items -->
+                    <option value="Chicken">Chicken</option>
+                    <option value="Beef">Beef</option>
+                    <option value="Vegetable">Vegetable</option>
+                    <option value="Fruit">Fruit</option>
+                    <option value="Dessert">Dessert</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dairy">Dairy</option>
+                    <option value="Other">Other</option>
+                    </select>
                 </div>
               </div>
 
@@ -608,7 +613,7 @@
       </div>
       
       </div>
-      
+       
       
     <script type="text/javascript" src="test.js"></script>
     <script type="text/javascript" src="db-functions-gpt.js"></script>

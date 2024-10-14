@@ -53,7 +53,6 @@ textarea {
 }
 
 .actionable, #sidebar #menuList .menu-link, #menuToggle {
-  cursor: hand;
   cursor: pointer;
 }
 
@@ -101,79 +100,84 @@ textarea {
 }
 
 /* General Table Styling */
-.table {
+#c-item-table {
   width: 100%;
   margin-bottom: 20px;
   border-collapse: collapse;
   table-layout: auto; /* Let the table adjust based on content */
 }
 
-.table th, .table td {
+#c-item-table th, #c-item-table td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
   word-wrap: break-word;
 }
+#c-item-table tbody tr {
+  border: 2px solid #000000;
+}
 
-.table th {
+#c-item-table th {
   background-color: #f2f2f2;
 }
 
-.table td {
-  word-wrap: break-word; /* Force text wrapping */
-  white-space: normal; /* Ensure long text wraps */
+#c-item-table td {
+  word-wrap: break-word;
+  white-space: normal;
 }
 
-.table td.item-type {
-  max-width: 100px; /* Limit the width of the "Item Type" column */
+#c-item-table td.item-type {
+  max-width: 100px;
+}
+#c-item-table td span{
+  padding: .5rem;
 }
 
-/************************************* Mobile-friendly table *************************************/
+/* Mobile-friendly table */
 @media only screen and (max-width: 768px) {
   html, body {
-    font-size: 14px; /* Reduce font size on smaller screens */
+    font-size: 14px;
   }
 
-  .table {
-    table-layout: fixed; /* Fix the table layout for smaller screens */
+  #c-item-table{
+    max-width: 100%;
+  }
+  .dt-type-numeric, .dt-type-date{
+    font-size: 200%;
+  }
+  .sorting_1{
+    font-size: 250%;
+  }
+  /* #c-item-table td{
+    font-size: 150%;
+  } */
+  #c-item-table {
+    table-layout: fixed;
   }
 
-  .table thead {
+  #c-item-table thead {
     display: none;
   }
 
-  .table, .table tbody, .table tr, .table td {
+  #c-item-table, #c-item-table tbody, #c-item-table tr, #c-item-table td {
     display: block;
     width: 100%;
   }
 
-  .table tr {
+  #c-item-table tr {
     margin-bottom: 15px;
   }
 
-  .table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    text-align: right;
-    position: relative;
-    padding-left: 50%;
-    border: none;
-    border-bottom: 1px solid #ddd;
+  #c-item-table td {
+    display: block;
+    padding: 10px;
+    text-align: center;
   }
 
-  .table td::before {
-    content: attr(data-label);
-    position: absolute;
-    left: 15px;
+  #c-item-table td::before {
+    display: block;
     font-weight: bold;
-    text-align: left;
-    white-space: nowrap;
-  }
-
-  .table td:last-child {
-    border-bottom: 2px solid #ddd;
+    margin-bottom: 5px;
   }
 }
 
@@ -198,9 +202,6 @@ textarea {
   margin-right: 10px;
   background: gainsboro;
   color: #222;
-}
-#menuToggle .fa {
-  line-height: 60px;
 }
 
 #logo {
@@ -253,39 +254,30 @@ textarea {
   padding: 15px 0;
   padding-right: 15px;
 }
-#sidebar #menuList .fa {
-  font-size: 20px;
-}
-#sidebar #menuList .menu-link {
-  display: block;
-  color: white;
-}
-
-#sidebar li {
-  padding: 7px 10px;
-}
 
 #content {
-  padding: 15px 20px 80px;
+  padding-top: 5rem;
   position: relative;
-  min-height: 100%;
+  min-height: 100vh;
   height: auto;
   overflow-y: auto;
   overflow-x: hidden;
   background-color: #edededed;
 }
-
+.content-panel{
+  min-height: 100vh;
+}
+#c-item-list{
+  padding: 0 1rem 0 1rem;
+}
 /* Footer Styling */
 #footer {
-  position: absolute;
+  position: relative;
   bottom: 0;
-  left: 0;
   width: 100%;
   padding: 10px 15px;
   background: #333;
   color: white;
-  height: 45px;
-  overflow: hidden;
 }
 
 /* Button Styling */
@@ -295,9 +287,10 @@ textarea {
   color: white;
   padding: 5px 10px;
   text-align: center;
-  font-size: auto;
+  font-size: 12px;
   cursor: pointer;
   border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 .delete-btn:hover {
@@ -310,9 +303,10 @@ textarea {
   color: white;
   padding: 5px 10px;
   text-align: center;
-  font-size: auto;
+  font-size: 12px;
   cursor: pointer;
   border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 .edit-btn:hover {
@@ -328,81 +322,81 @@ textarea {
 .submit-btn {
   width: 50%;
 }
-#c-item-table td{
-    text-align: left;
-   }
-
 
 /* Highlight categories in different colors */
+.item-type {
+  margin-top: 5px;
+}
+
 .item-type.chicken {
-    background-color:tomato;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-    margin-top: 1px;
-  }
-  
-  .item-type.beef {
-    background-color:saddlebrown;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
-  
-  .item-type.vegetable {
-    background-color: green;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
-  
-  .item-type.fruit {
-    background-color: orange;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-    margin-top: 10px;
-  }
-  .item-type.ingredient {
-    background-color: darksalmon;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
-  .item-type.dessert {
-    background-color: black;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
-  .item-type.lunch{
-    background-color: yellow;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
-  .item-type.dairy {
-    background-color:lightskyblue;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
-  
-  .item-type.other {
-    background-color: gray;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-  }
-  
+  background-color: tomato;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.item-type.beef {
+  background-color: saddlebrown;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.item-type.vegetable {
+  background-color: green;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.item-type.fruit {
+  background-color: orange;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.item-type.ingredient {
+  background-color: darksalmon;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.item-type.dessert {
+  background-color: black;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.item-type.lunch {
+  background-color: yellow;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.item-type.dairy {
+  background-color: lightskyblue;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.item-type.other {
+  background-color: gray;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
 /* Media Queries for Smaller Devices */
 @media only screen and (max-width: 767px) {
-  /* Stack the header and menu items for better display on small screens */
   .nav-title {
     font-size: 60% !important;
   }
 
-  /* Sidebar and Header adjustments */
   #sidebar {
     width: 100%;
     position: static;
@@ -418,10 +412,7 @@ textarea {
     height: auto;
   }
 
-  .sorting_1{
-    font-size: 20px;
-  }
   table td {
-    font-size: 50%;
+    font-size: 70%;
   }
 }
