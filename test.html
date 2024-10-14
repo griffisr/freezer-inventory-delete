@@ -7,7 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ioi</title>
-    <link rel='stylesheet' type="text/css" href='test.css' media='all' />
+    <!-- CSS Page style -->
+    <link rel='stylesheet' type="text/css" href='mainStyle-GPT.css' media='all' />
 
     <link rel='dns-prefetch' href='//fonts.googleapis.com' />
     <link rel='dns-prefetch' href='//s.w.org' />
@@ -234,6 +235,7 @@
               </div>
             </div>
       
+            <!-- FIlter section -->
             <div id="c-item-filter" class="filter-area">
               <div id="c-item-filter-opt" class="collapse filter-container">
 
@@ -279,9 +281,9 @@
                 <tr>
                   <td>Item Name</td>
                   <td>Item Type</td>
-                  <td>Fresh/Frozen</td>
                   <td>Date Added</td>
                   <td>Quantity</td>
+                  <td>Action</td>
                   <td>Notes</td>
                 </tr>
               </thead>
@@ -295,6 +297,10 @@
 
         <!----------------Add Item---------------------------->
         <div id="c-item-form" class="content-panel">
+          <a class="menu-link" id="sm-item" data-toggle="content-panel" data-target="#c-item-list">
+            <span><i class="fa fa-book fa-fw"></i></span>
+            <span class="title" >Cancel</span>
+          </a>
           <h1>Add Item</h1>
       
       
@@ -380,12 +386,6 @@
                                                 DAIRY
                                               </label>
                                             </div>
-                                            <div class="checkbox">
-                                              <label>
-                                                <input type="checkbox" value="">
-                                                CHICKEN
-                                              </label>
-                                            </div>
                       
                       
                                             <div class="checkbox">
@@ -399,7 +399,7 @@
                                             </div>
                                           </div>
       
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                       <label class="control-label">Fresh or Frozen *</label>
                       <div class="clearfix"></div>
                       <div class="radio-inline">
@@ -408,7 +408,7 @@
                       <div class="radio-inline">
                         <label class=""><input type="radio" name="itm-grp" id="frozen-btn"/><span class="vmid">Frozen</span></label>
                       </div>
-                    </div>  
+                    </div>   -->
        
 
                     <div class="form-group">
@@ -425,6 +425,7 @@
                           <input type="text" class="form-control" id="quantityInput"/>
                         </div>
                       </div>  
+
                     <div class="form-group">
                         <label class="control-label">Notes</label>
                         <div class="">
@@ -610,6 +611,6 @@
       
       
     <script type="text/javascript" src="test.js"></script>
-    <script type="text/javascript" src="db-functions.js"></script>
+    <script type="text/javascript" src="db-functions-gpt.js"></script>
 </body>
 </html>

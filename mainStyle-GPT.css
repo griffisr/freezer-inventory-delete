@@ -1,5 +1,6 @@
 @charset "UTF-8";
 @import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css);
+
 html, body {
   width: 100%;
   height: 100%;
@@ -8,8 +9,10 @@ html, body {
   min-height: 310px;
   font-family: "Source Sans Pro", sans-serif;
   font-size: 16px;
+  margin: 0;
+  padding: 0;
 }
- 
+
 textarea {
   resize: none;
 }
@@ -97,56 +100,90 @@ textarea {
   text-transform: uppercase;
 }
 
-@media only screen and (max-width: 768px) {
-  .responsive-tabs {
-    border-bottom: 0;
-    overflow: hidden;
-    position: relative;
-    background: white;
-  }
-  .responsive-tabs::after {
-    content: "☰";
-    position: absolute;
-    top: 8px;
-    right: 15px;
-    z-index: 2;
-    pointer-events: none;
-  }
-  .responsive-tabs li {
-    box-shadow: none;
-    white-space: nowrap;
-    text-overflow: elipsis;
-    border: 0;
-    float: none !important;
-    position: absolute;
-    display: block !important;
-    /* One link per "row" */
-  }
-  .responsive-tabs li a {
-    border: 0 !important;
-  }
-  .responsive-tabs li.active {
-    position: static !important;
-    top: 0;
-    left: 0;
-  }
-}
-.filter-area {
+/* General Table Styling */
+.table {
+  width: 100%;
   margin-bottom: 20px;
+  border-collapse: collapse;
+  table-layout: auto; /* Let the table adjust based on content */
 }
 
-.filter-container {
-  margin: 15px 0;
-  padding: 15px 0;
-  background: #5bc0de;
+.table th, .table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+  word-wrap: break-word;
 }
 
+.table th {
+  background-color: #f2f2f2;
+}
+
+.table td {
+  word-wrap: break-word; /* Force text wrapping */
+  white-space: normal; /* Ensure long text wraps */
+}
+
+.table td.item-type {
+  max-width: 100px; /* Limit the width of the "Item Type" column */
+}
+
+/************************************* Mobile-friendly table *************************************/
+@media only screen and (max-width: 768px) {
+  html, body {
+    font-size: 14px; /* Reduce font size on smaller screens */
+  }
+
+  .table {
+    table-layout: fixed; /* Fix the table layout for smaller screens */
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table tr {
+    margin-bottom: 15px;
+  }
+
+  .table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    text-align: right;
+    position: relative;
+    padding-left: 50%;
+    border: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 15px;
+    font-weight: bold;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .table td:last-child {
+    border-bottom: 2px solid #ddd;
+  }
+}
+
+/* Header Styling */
 #header {
   width: 100%;
   height: 60px;
   background: #333;
   color: gainsboro;
-  padding: 0px;
+  padding: 0;
   position: fixed;
   top: 0;
   left: 0;
@@ -192,67 +229,7 @@ textarea {
   height: 100%;
 }
 
-#langArea {
-  font-size: 90%;
-}
-#langArea > label {
-  background: #222;
-  width: auto;
-  display: inline-block;
-  height: 30px;
-  padding: 2px 5px;
-  border-radius: 3px;
-}
-#langArea select {
-  background: none;
-  border: 0;
-  color: white;
-  width: auto;
-  height: auto;
-  vertical-align: middle;
-  padding: 0;
-  font-size: inherit;
-}
-#langArea span {
-  vertical-align: middle;
-}
-
-#lang-select {
-  width: 90px;
-  font-size: 16px;
-  padding: 4px 20px 4px 28px;
-  margin-right: 15px;
-  background: white;
-  background-size: 18px 18px;
-}
-
-#userArea .userToggle {
-  font-size: 16px;
-  display: inline-block;
-  vertical-align: middle;
-}
-#userArea .userToggle .fa {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-#userPanel {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 250px;
-  height: auto;
-  background: #333;
-  padding: 10px;
-}
-
-#body {
-  width: 100%;
-  height: 100%;
-  padding-top: 60px;
-  position: relative;
-}
-
+/* Sidebar Styling */
 #sidebar {
   min-width: 60px;
   width: auto;
@@ -268,6 +245,7 @@ textarea {
   overflow: hidden;
   z-index: 1170;
 }
+
 #sidebar #menuList {
   width: 300px;
   height: 100%;
@@ -278,51 +256,13 @@ textarea {
 #sidebar #menuList .fa {
   font-size: 20px;
 }
-#sidebar #menuList div[data-toggle=collapse] {
-  position: relative;
-  padding-right: 25px;
-}
-#sidebar #menuList div[data-toggle=collapse]:after {
-  content: "";
-  font-family: "FontAwesome";
-  width: 30px;
-  height: 100%;
-  text-align: right;
-  line-height: 22px;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-#sidebar #menuList div[data-toggle=collapse][aria-expanded=true]:after {
-  content: "";
-}
 #sidebar #menuList .menu-link {
   display: block;
   color: white;
 }
-#sidebar #menuList .menu-link:hover, #sidebar #menuList .menu-link:focus, #sidebar #menuList .menu-link:hover:focus, #sidebar #menuList .menu-link:active {
-  text-decoration: none;
-}
+
 #sidebar li {
   padding: 7px 10px;
-}
-#sidebar li .title {
-  padding-left: 8px;
-  display: inline-block;
-}
-#sidebar .level2 {
-  margin: 5px -10px 0;
-  padding-left: 30px;
-  background: #111;
-}
-
-#translation-lang {
-  margin-bottom: 20px;
-}
-#translation-lang .btn.disabled {
-  cursor: pointer;
-  cursor: hand;
-  pointer-events: auto;
 }
 
 #content {
@@ -335,6 +275,7 @@ textarea {
   background-color: #edededed;
 }
 
+/* Footer Styling */
 #footer {
   position: absolute;
   bottom: 0;
@@ -346,53 +287,15 @@ textarea {
   height: 45px;
   overflow: hidden;
 }
-/* 
-.table {
-  min-width: 100%;
-} */
-/* .table th, .table thead td, .table tr {
-  vertical-align: bottom;
-  text-align: left;
-} */
- #c-item-table td{
-  text-align: left;
- }
- #c-item-table tr{
-  
- }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-.add-item-button-wrapper{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-
-}
-
-.submit-btn{
-  width: 50%;
-}
+/* Button Styling */
 .delete-btn {
   background-color: #ff4c4c;
   border: none;
   color: white;
   padding: 5px 10px;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 12px;
+  font-size: auto;
   cursor: pointer;
   border-radius: 4px;
 }
@@ -400,15 +303,14 @@ textarea {
 .delete-btn:hover {
   background-color: #ff1c1c;
 }
+
 .edit-btn {
   background-color: #5e4cff;
   border: none;
   color: white;
   padding: 5px 10px;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 12px;
+  font-size: auto;
   cursor: pointer;
   border-radius: 4px;
 }
@@ -417,14 +319,109 @@ textarea {
   background-color: #3b26fe;
 }
 
+.add-item-button-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.submit-btn {
+  width: 50%;
+}
+#c-item-table td{
+    text-align: left;
+   }
 
 
-
-@media only screen and (max-width: 767px) {
-  .nav-title{
-    font-size: 60%!important;
+/* Highlight categories in different colors */
+.item-type.chicken {
+    background-color:tomato;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-top: 1px;
   }
-  /* table td {
-    font-size: 50%!important;
-  } */
+  
+  .item-type.beef {
+    background-color:saddlebrown;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  
+  .item-type.vegetable {
+    background-color: green;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  
+  .item-type.fruit {
+    background-color: orange;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin-top: 10px;
+  }
+  .item-type.ingredient {
+    background-color: darksalmon;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  .item-type.dessert {
+    background-color: black;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  .item-type.lunch{
+    background-color: yellow;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  .item-type.dairy {
+    background-color:lightskyblue;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  
+  .item-type.other {
+    background-color: gray;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+  
+/* Media Queries for Smaller Devices */
+@media only screen and (max-width: 767px) {
+  /* Stack the header and menu items for better display on small screens */
+  .nav-title {
+    font-size: 60% !important;
+  }
+
+  /* Sidebar and Header adjustments */
+  #sidebar {
+    width: 100%;
+    position: static;
+    height: auto;
+  }
+
+  #header {
+    height: auto;
+  }
+
+  #footer {
+    position: static;
+    height: auto;
+  }
+
+  .sorting_1{
+    font-size: 20px;
+  }
+  table td {
+    font-size: 50%;
+  }
 }
