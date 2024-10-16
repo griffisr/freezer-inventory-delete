@@ -1,72 +1,163 @@
-//Initialize Database
+// Firebase Initialization (API key should be secured in a backend environment)
 const firebaseConfig = {
-  apiKey: "AIzaSyCKnIn4SsMC74rTGqekjSw8OvLwWe88bbI",
-  authDomain: "party-smart-tcod.firebaseapp.com",
-  databaseURL: "https://party-smart-tcod.firebaseio.com",
-  projectId: "party-smart-tcod",
-  storageBucket: "party-smart-tcod.appspot.com",
-  messagingSenderId: "332152048668",
-  appId: "1:332152048668:web:9adf5fb209d803b8d4e3d9"
-};
-firebase.initializeApp(firebaseConfig);
-var database = firebase.database();
-
-firebase.auth().onAuthStateChanged(function(user){
-  if(user){
-    console.log("logged in");
-    logOut.classList.remove('hide');
-    logIn.classList.add('hide');
-    newEventBtn.classList.remove('hide');
-}
-else{
-    logOut.classList.add('hide');
-    logIn.classList.remove('hide');
-    newEventBtn.classList.add('hide');
-}
-});
-
-
-
-
-$(document).ready(function fetchAndDisplayData() {
-  // Reference to your data in the database
-  var dataRef = database.ref("users/Riley");
-
-  // Initialize array to store rows of data
-  var dataArray = [];
-
-  // Get the data once
-  dataRef.once('value', function(snapshot) {
-      // Loop through each child item
-      snapshot.forEach(function(childSnapshot) {
-          var childData = childSnapshot.val();
-          var itemName = childSnapshot.key;
-
-          // Create an array representing a row of data
-          var rowData = [
-              itemName, // Item Name
-              childData.itemType, // Item Type
-              childData.freshOrFrozen, // Fresh/Frozen
-              childData.dateAdded, // Date Added
-              childData.quantity, // Quantity
-              childData.notes || "empty", // Notes
-          ];
-
-          // Push the row data into the dataArray
-          dataArray.push(rowData);
-      });
-
-      // Now, the dataArray contains an array of arrays representing each row of data
-      console.log(dataArray);
-
-      // Initialize DataTable here after data is fetched
-      new DataTable('#c-item-table', {
-          data: dataArray,
-          searching: false, // Disable searching
-          lengthChange: false // Disable length change
-      });
+    apiKey: "Your-API-Key", 
+    authDomain: "party-smart-tcod.firebaseapp.com",
+    databaseURL: "https://party-smart-tcod.firebaseio.com",
+    projectId: "party-smart-tcod",
+    storageBucket: "party-smart-tcod.appspot.com",
+    messagingSenderId: "332152048668",
+    appId: "1:332152048668:web:9adf5fb209d803b8d4e3d9"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+  
+  // Authentication State Handling
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+      console.log("Logged in");
+      logOut.classList.remove('hide');
+      logIn.classList.add('hide');
+      newEventBtn.classList.remove('hide');
+    } else {
+      logOut.classList.add('hide');
+      logIn.classList.remove('hide');
+      newEventBtn.classList.add('hide');
+    }
   });
-});
+  let totalItems = 0;
+  let chickenCount = 0;
+  let beefCount = 0;
+  let vegetablesCount = 0;
+  let fruitsCount = 0;
+  let oldestItems = [];
+  let soonExpireItems = [];
+  // Fetch and Display Data (Initialize DataTable after fetching)
+  $(document).ready(function () {
+    fetchAndDisplayData();
+  });
+  
+  function fetchAndDisplayData() {
+    const dataRef = database.ref("users/Riley");
+    const dataArray = [];
+  
+    dataRef.once('value', function (snapshot) {
+      snapshot.forEach(function (childSnapshot) {
+        const childData = childSnapshot.val();
+        const itemName = childSnapshot.key;
+  
+        // Replace commas in the itemType with a comma followed by <br> to create new lines
+        // Apply custom colors to item types based on category
+      const formattedItemType = childData.itemType.map(itemType => {
+        if (itemType.includes('CHICKEN')) {
+          return `<span class="item-type chicken">${itemType}</span>`;
+        } else if (itemType.includes('BEEF')) {
+          return `<span class="item-type beef">${itemType}</span>`;
+        } else if (itemType.includes('VEGETABLE')) {
+          return `<span class="item-type vegetable">${itemType}</span>`;
+        } else if (itemType.includes('FRUIT')) {
+          return `<span class="item-type fruit">${itemType}</span>`;
+        } else if (itemType.includes('PREPPED INGREDIENT')) {
+            return `<span class="item-type ingredient">${itemType}</span>`;
+        } else if (itemType.includes('DESSERT')) {
+            return `<span class="item-type dessert">${itemType}</span>`;
+        } else if (itemType.includes('QUICK LUNCH ITEM')) {
+            return `<span class="item-type lunch">${itemType}</span>`;
+        } else if (itemType.includes('DAIRY')) {
+            return `<span class="item-type dairy">${itemType}</span>`;
+        } else {
+          return `<span class="item-type other">${itemType}</span>`;
+        }
+      }).join("<span><span>"); // Join them with <br> for line breaks
+        dataArray.push([
+          itemName,
+          formattedItemType,
+          childData.dateAdded,
+          childData.quantity,
+          `<button class="edit-btn" onclick="editItem('${itemName}')">Edit</button>
+         <button class="delete-btn" onclick="deleteItem('${itemName}')">Delete</button>`,
+         childData.notes || " "
+        ]);
+      });
+  // Check if the DataTable is already initialized
+  if (!$.fn.DataTable.isDataTable('#c-item-table')) {
+
+    // Initialize DataTable only if it hasn't been initialized yet
+    $('#c-item-table').DataTable({
+      data: dataArray,
+      searching: false,    // Disable searching
+      lengthChange: false, // Disable ability to change length of entries
+      pageLength: 5, // Default number of items per page
+      lengthMenu: [5, 10, 25, 50] // Options for number of items per page
+    });
+  }
+  
+   
+    });
+  }
+// EDIT ITEM
+  function editItem(itemName) {
+    const itemRef = database.ref("users/Riley/" + itemName);
+  
+    // Fetch the item from Firebase
+    itemRef.once('value').then(function(snapshot) {
+      const itemData = snapshot.val();
+  
+      if (itemData) {
+        // Fill the form fields with the item data
+        document.getElementById("newItemName").value = itemData.itemName;
+        document.getElementById("quantityInput").value = itemData.quantity;
+        document.getElementById("notesTextarea").value = itemData.notes || "";
+        document.getElementById("dateAddedInput").value = itemData.dateAdded;
+  
+        // Set the radio button for Fresh/Frozen
+        if (itemData.freshOrFrozen === "Frozen") {
+          document.getElementById("frozen-btn").checked = true;
+        } else {
+          document.getElementById("fresh-btn").checked = true;
+        }
+  
+        // Set checkboxes for Item Types
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.checked = itemData.itemType.includes(checkbox.nextSibling.textContent.trim());
+        });
+  
+        // Delete the old item from Firebase
+        itemRef.remove().then(() => {
+          alert(`Editing "${itemName}". Make changes and click 'Add' to save.`);
+          triggerPanelSwitch('#c-item-form');
+        }).catch(error => {
+          console.error("Error deleting item:", error);
+        });
+      }
+    }).catch(function(error) {
+      console.error("Error fetching item:", error);
+    });
+  }
+  
+
+//   DELETE ITEM
+  function deleteItem(itemName) {
+    if (confirm(`Are you sure you want to delete "${itemName}"?`)) {
+      const itemRef = database.ref("users/Riley/" + itemName);
+  
+      // Remove item from Firebase
+      itemRef.remove()
+        .then(() => {
+          alert(`"${itemName}" has been deleted.`);
+          
+          // Refresh the table after deletion
+          $('#c-item-table').DataTable().destroy();
+          fetchAndDisplayData();
+        })
+        .catch(error => {
+          console.error("Error deleting item:", error);
+        });
+    }
+  }
+
+  
+  
 
 
 
@@ -74,319 +165,179 @@ $(document).ready(function fetchAndDisplayData() {
 
 
 
-/////////////////////////////Add data////////////////////////////
-function createItem(){
-  // Get values from HTML elements
-  const eventName = document.getElementById("newItemName").value;
-  const quantity = document.getElementById("quantityInput").value;
-  const notes = document.getElementById("notesTextarea").value;
+// Create ITEM
+  function createItem() {
+    const itemName = document.getElementById("newItemName").value.trim();
+    const quantity = document.getElementById("quantityInput").value.trim();
+    const notes = document.getElementById("notesTextarea").value.trim();
+    const dateAdded = document.getElementById("dateAddedInput").value;
+    
+    let freshOrFrozen = document.querySelector('input[id="frozen-btn"]:checked') ? "Frozen" : "Fresh";
+    
+    const itemType = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+      .map(checkbox => checkbox.nextSibling.textContent.trim());
+  
+    if (!itemName) {
+      alert("Please enter an item name!");
+      return;
+    }
+  
+    // Store data in Firebase
+    firebase.database().ref(`users/Riley/${itemName}`).set({
+      itemName,
+      freshOrFrozen,
+      dateAdded,
+      quantity,
+      notes,
+      itemType
+    }).then(() => {
+      alert("Item Added");
+      clearFormInputs();
+      
+      // Fetch and update the table after the new item is successfully added
+      $('#c-item-table').DataTable().destroy();
+      fetchAndDisplayData(); // Call the function to refresh the table
+      triggerPanelSwitch('#c-item-list');
+    }).catch(error => {
+      console.error("Error uploading item:", error);
+    });
+  }
 
-/**************/
-// Get Fresh or Frozen radio button value
-let freshOrFrozen = "";
-const freshRadio = document.querySelector('input[id="frozen-btn"]:checked');
-if (freshRadio) {
-  freshOrFrozen = "Frozen";
-}
-else{
-  freshOrFrozen = "Fresh";
-}
 
-// Get Date Added value
-const dateAdded = document.getElementById("dateAddedInput").value;
 
-/**************/
-let itemType = [];
-// Get all checkboxes
-const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-// Loop through each checked checkbox and add its value to the array
-checkboxes.forEach(function(checkbox) {
-  itemType.push(" " + checkbox.nextSibling.textContent.trim());
-  checkbox.checked = false;
-});
 
-/**************/
 
-if(eventName === null || eventName === "")
-{
-  alert("Please enter an item name!")
-}
-else
-{
-  localStorage.setItem('eventName', eventName);
-  firebase.database().ref("users/" + "Riley/" + eventName + "/").set({
-    itemName: eventName,
-    freshOrFrozen: freshOrFrozen,
-    dateAdded: dateAdded,
-    quantity: quantity,
-    notes: notes,
-    itemType: itemType
-
-  })
-  .then(function() {
-    alert("Item Added");
-    // Clear input fields after successful upload
+  // Function to trigger the panel switch using the data-toggle behavior
+function triggerPanelSwitch(targetPanel) {
+    // Find the link that triggers the target panel
+    const link = document.querySelector(`a[data-target='${targetPanel}']`);
+    
+    if (link) {
+      // Simulate the click event to trigger the data-toggle
+      link.click();
+    } else {
+      console.error('Target panel link not found.');
+    }
+  }
+  
+  // Clear Input Fields After Adding Item
+  function clearFormInputs() {
     document.getElementById("newItemName").value = "";
     document.getElementById("quantityInput").value = "";
     document.getElementById("notesTextarea").value = "";
     document.getElementById("dateAddedInput").value = "";
-  })
-  .catch(function(error) {
-    console.error("Error uploading item:", error);
-  });
-}
-
-}
-
+  }
   
   
-
-////////////////////////////Search List////////////////////////
-
-function searchTable() {
-  // Declare variables
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("searchInput");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("c-item-table");
-  tr = table.getElementsByTagName("tr");
-
-  // Loop through all table rows, and hide those that don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td");
-    for (var j = 0; j < td.length; j++) {
-      if (td[j]) {
-        txtValue = td[j].textContent || td[j].innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-          break; // Break the inner loop if match found to avoid unnecessary iterations
-        } else {
-          tr[i].style.display = "none";
+  // Search Function for DataTable
+  function searchTable() {
+    const input = document.getElementById("searchInput").value.toUpperCase();
+    const table = document.getElementById("c-item-table");
+    const tr = table.getElementsByTagName("tr");
+  
+    Array.from(tr).forEach(row => {
+      const cells = row.getElementsByTagName("td");
+      let foundMatch = false;
+  
+      Array.from(cells).forEach(cell => {
+        if (cell && cell.textContent.toUpperCase().includes(input)) {
+          foundMatch = true;
         }
-      }
-    }
-  }
-}
-
-
-
-//-------------------------- Returns time ---------------------------
-function addZero(i) {
-  if (i < 10) {
-  i = "0" + i;
-}
-return i;
-}
-
-function getTime() {
-  var d = new Date();
-  var h = addZero(d.getHours());
-  var m = addZero(d.getMinutes());
-  var s = addZero(d.getSeconds());
-  var currentTime = h + ":" + m + ":" + s;
-
-  return currentTime;
-}
-
-
-//------------------------------------------- UI List Funtions -------------------------------------
-
-//Actively read data from firebase to print to UI
-
-//Gets data for currently logged in user
-firebase.auth().onAuthStateChanged(function(user){
-if(user){
-  localStorage.setItem('userUID', user.uid);
-  eventName = localStorage.getItem('eventName');
-  document.title = eventName;
-  ref = database.ref("users/" + user.uid + "/events/" + eventName + "/guestList/")
-  ref.on('value', gotData, errData)
-}
-});
-
-
-guestsNotInside = [];
-guestsAreInside = [];
-function gotData(data){
-eventName = localStorage.getItem('eventName');
-//Momentarily clears both UI lists so items can be added w/o duplicates
-document.getElementById("namesInside").innerHTML = "";
-guestsNotInside.length = 0;
-guestsAreInside.length = 0;
-
-
-var scores = data.val();
-var keys = Object.keys(scores);
-
-var ulInside = document.getElementById("namesInside");
-
-for ( var i=0; i < keys.length; i++){
-  var k = keys[i];
-  var names = scores[k].name;
-  var inside = scores[k].Inside;
-
-  if(inside == "No"){
-    guestsNotInside.push(names)
+      });
+  
+      row.style.display = foundMatch ? "" : "none";
+    });
   }
   
-}
-var guestsInside = 0;
-for ( var i=0; i < keys.length; i++){
-  var k = keys[i];
-  var names = scores[k].name;
-  var inside = scores[k].Inside;
 
-  if(inside === "Yes"){
-    guestsInside ++; 
-    guestsAreInside.push(names)
 
-    var a = document.createElement("a");
-    var li = document.createElement("li")
 
-    a.textContent = names;
-    li.appendChild(a);
-    ulInside.appendChild(li);
-    a.setAttribute('id', names);
-    a.setAttribute('onclick', 'setTextOut(id)');
+
+
+
+
+
+
+
+
+  
+  // Autocomplete with Debounce
+  let debounceTimeout;
+  function debounce(func, delay) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(func, delay);
   }
   
-}
-//********************Add if statment to change risk level photo based on guestsInside var **********************
-if(guestsInside === 1)
-{
-  document.getElementById('currentInside').innerHTML = "There is currently: " + guestsInside + " guest inside";
-}
-else{
-  document.getElementById('currentInside').innerHTML = "There are currently: " + guestsInside + " guests inside";
-}
-
-}
-
-function errData(err){
-  console.log('Error!');
-  console.log(err);
-}
-
-//Search List function
-
-function insideList() {
-var input, filter, ul, li, a, i, txtValue;
-input = document.getElementById("checkOut");
-filter = input.value.toUpperCase();
-ul = document.getElementById("namesInside");
-li = ul.getElementsByTagName("li");
-for (i = 0; i < li.length; i++) {
-    a = li[i].getElementsByTagName("a")[0];
-    txtValue = a.textContent || a.innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        li[i].style.display = "";
-    } else {
-        li[i].style.display = "none";
-    }
-}
-}
-
-
-
-function autocomplete(inp, arr) {
-/*the autocomplete function takes two arguments,
-the text field element and an array of possible autocompleted values:*/
-var currentFocus;
-/*execute a function when someone writes in the text field:*/
-inp.addEventListener("input", function(e) {
-    var a, b, i, val = this.value;
-    /*close any already open lists of autocompleted values*/
-    closeAllLists();
-    if (!val) { return false;}
-    currentFocus = -1;
-    /*create a DIV element that will contain the items (values):*/
-    a = document.createElement("DIV");
-    a.setAttribute("id", this.id + "autocomplete-list");
-    a.setAttribute("class", "autocomplete-items");
-    /*append the DIV element as a child of the autocomplete container:*/
-    this.parentNode.appendChild(a);
-    /*for each item in the array...*/
-    for (i = 0; i < arr.length; i++) {
-      /*check if the item starts with the same letters as the text field value:*/
-      if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-        /*create a DIV element for each matching element:*/
-        b = document.createElement("DIV");
-        /*make the matching letters bold:*/
-        b.innerHTML = arr[i].substr(0, val.length);
-        b.innerHTML += arr[i].substr(val.length);
-        /*insert a input field that will hold the current array item's value:*/
-        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-        /*execute a function when someone clicks on the item value (DIV element):*/
-        b.addEventListener("click", function(e) {
-            /*insert the value for the autocomplete text field:*/
-            inp.value = this.getElementsByTagName("input")[0].value;
-            /*close the list of autocompleted values,
-            (or any other open lists of autocompleted values:*/
-            closeAllLists();
+  function autocomplete(inp, arr) {
+    let currentFocus;
+    inp.addEventListener("input", function (e) {
+      const val = this.value;
+      debounce(() => {
+        closeAllLists();
+        if (!val) return false;
+        currentFocus = -1;
+  
+        const listDiv = document.createElement("DIV");
+        listDiv.setAttribute("id", this.id + "autocomplete-list");
+        listDiv.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(listDiv);
+  
+        arr.forEach(item => {
+          if (item.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+            const itemDiv = document.createElement("DIV");
+            itemDiv.innerHTML = "<strong>" + item.substr(0, val.length) + "</strong>";
+            itemDiv.innerHTML += item.substr(val.length);
+            itemDiv.innerHTML += "<input type='hidden' value='" + item + "'>";
+  
+            itemDiv.addEventListener("click", function () {
+              inp.value = this.getElementsByTagName("input")[0].value;
+              closeAllLists();
+            });
+  
+            listDiv.appendChild(itemDiv);
+          }
         });
-        a.appendChild(b);
+      }, 300); // Adjust the debounce delay as needed
+    });
+  
+    inp.addEventListener("keydown", function (e) {
+      let x = document.getElementById(this.id + "autocomplete-list");
+      if (x) x = x.getElementsByTagName("div");
+  
+      if (e.keyCode == 40) {
+        currentFocus++;
+        addActive(x);
+      } else if (e.keyCode == 38) {
+        currentFocus--;
+        addActive(x);
+      } else if (e.keyCode == 13) {
+        e.preventDefault();
+        if (currentFocus > -1 && x) x[currentFocus].click();
       }
-    }
-});
-/*execute a function presses a key on the keyboard:*/
-inp.addEventListener("keydown", function(e) {
-    var x = document.getElementById(this.id + "autocomplete-list");
-    if (x) x = x.getElementsByTagName("div");
-    if (e.keyCode == 40) {
-      /*If the arrow DOWN key is pressed,
-      increase the currentFocus variable:*/
-      currentFocus++;
-      /*and and make the current item more visible:*/
-      addActive(x);
-    } else if (e.keyCode == 38) { //up
-      /*If the arrow UP key is pressed,
-      decrease the currentFocus variable:*/
-      currentFocus--;
-      /*and and make the current item more visible:*/
-      addActive(x);
-    } else if (e.keyCode == 13) {
-      /*If the ENTER key is pressed, prevent the form from being submitted,*/
-      e.preventDefault();
-      if (currentFocus > -1) {
-        /*and simulate a click on the "active" item:*/
-        if (x) x[currentFocus].click();
-      }
-    }
-});
-function addActive(x) {
-  /*a function to classify an item as "active":*/
-  if (!x) return false;
-  /*start by removing the "active" class on all items:*/
-  removeActive(x);
-  if (currentFocus >= x.length) currentFocus = 0;
-  if (currentFocus < 0) currentFocus = (x.length - 1);
-  /*add class "autocomplete-active":*/
-  x[currentFocus].classList.add("autocomplete-active");
-}
-function removeActive(x) {
-  /*a function to remove the "active" class from all autocomplete items:*/
-  for (var i = 0; i < x.length; i++) {
-    x[i].classList.remove("autocomplete-active");
+    });
   }
-}
-function closeAllLists(elmnt) {
-  /*close all autocomplete lists in the document,
-  except the one passed as an argument:*/
-  var x = document.getElementsByClassName("autocomplete-items");
-  for (var i = 0; i < x.length; i++) {
-    if (elmnt != x[i] && elmnt != inp) {
-      x[i].parentNode.removeChild(x[i]);
-    }
+  
+  // Utility function for autocomplete
+  function addActive(x) {
+    if (!x) return false;
+    removeActive(x);
+    if (currentFocus >= x.length) currentFocus = 0;
+    if (currentFocus < 0) currentFocus = (x.length - 1);
+    x[currentFocus].classList.add("autocomplete-active");
   }
-}
-/*execute a function when someone clicks in the document:*/
-document.addEventListener("click", function (e) {
+  
+  function removeActive(x) {
+    Array.from(x).forEach(item => item.classList.remove("autocomplete-active"));
+  }
+  
+  function closeAllLists(elmnt) {
+    const items = document.getElementsByClassName("autocomplete-items");
+    Array.from(items).forEach(item => {
+      if (elmnt !== item && elmnt !== inp) item.parentNode.removeChild(item);
+    });
+  }
+  
+  document.addEventListener("click", function (e) {
     closeAllLists(e.target);
-});
-}
-
-/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
-autocomplete(document.getElementById("checkInName"), guestsNotInside);
-autocomplete(document.getElementById("checkOutName"), guestsAreInside);
-
-
+  });
+  

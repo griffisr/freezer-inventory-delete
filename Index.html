@@ -1,90 +1,700 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" 
+    type="image/png" 
+    href="https://s3.amazonaws.com/rileyg.me/Inventory-On-Ice/favicon.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FREEZER INVENTORY</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        #searchContainer {
-            margin-bottom: 20px;
-        }
-    </style>
-    <link rel='stylesheet' type="text/css" href='main.css' media='all' />
+    <title>ioi</title>
+    <!-- CSS Page style -->
+    <link rel='stylesheet' type="text/css" href='mainStyle.css' media='all' />
 
-
+    <link rel='dns-prefetch' href='//fonts.googleapis.com' />
+    <link rel='dns-prefetch' href='//s.w.org' />
+    <link href='https://fonts.gstatic.com' crossorigin rel='preconnect' />
+  
+  
     <!--Initialize Firebase-->
-<script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-auth.js"></script>
+ 
+
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/motion-ui/1.2.3/motion-ui.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation-prototype.min.css">
+<link href='https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css' rel='stylesheet' type='text/css'>
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Bootstrap JS -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+
+<!--DataTables-->
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.5/css/dataTables.dataTables.css" />
+  
+<script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
+
+
 </head>
 <body>
-    <h2>Freezer Inventory</h2>
-    
-    <!-- Search bar component -->
-    <div id="searchContainer">
-        <label for="searchInput">Search Item:</label>
-        <input type="text" id="searchInput" list="suggestions" oninput="filterTable()" placeholder="Type here to search...">
-        <datalist id="suggestions">
-            <!-- Suggestions will be dynamically inserted here -->
-        </datalist>
-        <button onclick="submitSearch()">Submit</button>
-    </div>
+    <div id="header">
 
-    <div class="table-wrapper">
-    <!-- Table to display JSON data -->
-    <table id="jsonTable">
-        <!-- JSON data will be inserted here dynamically -->
-    </table>
-    </div>
+        <input type="hidden" id="role" value="sales" />
+      
+        <div id="menuToggle" class="pull-left">
+          <i class="fa fa-list"></i>
+        </div>  
+      
+        <div id="logo" class="pull-left">
+          <span class=""><i class="nav-title fa fa-codepen"></i></span><span class="nav-title small"> INVENTORY ON ICE</span>
+        </div>
+      
+        <div id="right-nav" class="pull-right text-right vcenter">
+      
+          <div id="userArea">
+            <button class="btn-unstyled pgutterless userToggle" data-toggle="collapse" data-target="#userPanel"><i class="fa fa-user fa-2x fa-fw"></i></button>
+          </div>
+          &nbsp;&nbsp;
+      
+      
+          <div id="userPanel" class="userPanel collapse text-left">
+            <p class="text-right">
+              <span id="UserName"></span><br/>
+            </p>
+            <div class="text-right small">
+              <a>Edit Profile</a><br/>
+              <a>Change Password</a>
+            </div>
+            <br/>
+      
+      
+            <button class="btn btn-danger btn-xs">Log Out</button>
+      
+          </div>
+      
+        </div>
+      
+       <!-- <div id="right-tools" class="hidden-xs pull-right vcenter">
+          <span class="notif-alert display-inline vmid"><i class="fa fa-envelope fa-lg fa-fw"></i></span>
+          &nbsp;&nbsp;&nbsp; 
+        </div> -->
+      
+      </div>
+      
+      <div id="body">
+      
+        <div id="sidebar" style="left: -266px">
+      
+        <!--  <div class="visible-xs-block">
+            <table class="col-xs-12 no-float gutterless text-center">
+              <tr>
+                <td style="padding: 15px 10px;"><span title="Message" class="notif-alert display-inline vmid"><i class="fa fa-envelope fa-lg fa-fw"></i></span></td>
+                <td style="padding: 15px 10px;"><span title="Notes" class="display-inline vmid"><i class="fa fa-sticky-note fa-2x fa-fw"></i></span></td>
+              </tr>
+            </table>
+          </div> -->
+      
+          <!-----------------------Nav Menu-------------------->
+          <ul id="menuList" class="list-unstyled gutterless">
+      
+            <li>
+              <a class="menu-link" data-toggle="content-panel" data-target="#c-dashboard">
+                <span><i class="fa fa-dashboard fa-fw"></i></span>
+                <span class="title">Dashboard</span>
+              </a>
+            </li>
+      
+            <li>
+              <a class="menu-link" id="sm-item" data-toggle="content-panel" data-target="#c-item-list">
+                <span><i class="fa fa-book fa-fw"></i></span>
+                <span class="title" >Items</span>
+              </a>
+            </li>
+      
+           
+      
+            <!-- <li>
+              <div data-toggle="collapse" data-target="#m-sett">
+                <span><i class="fa fa-gear fa-fw"></i></span>
+                <span class="title">Master Data</span>
+              </div>
+      
+              <ul id="m-sett" class="collapse list-unstyled level2">
+                <li>
+                  <div data-toggle="collapse" data-target="#m-sett-str">
+                    <span class="title">Organizational Structure</span>
+                  </div>
+                  <ul id="m-sett-str" class="collapse list-unstyled level2">
+                    <li>
+                      <span class="title">Companies</span>
+                    </li>
+                    <li>
+                      <span class="title">Sites</span>
+                    </li>
+                    <li>
+                      <span class="title">Warehouses</span>
+                    </li>
+                    <li>
+                      <span class="title">Stores</span>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <div data-toggle="collapse" data-target="#m-sett-item">
+                    <span class="title">Items</span>
+      
+                    <ul id="m-sett-item" class="collapse list-unstyled level2">
+                      <li>
+                        <span class="title">Item Category</span>
+                      </li>
+                      <li><span class="title">Item Group</span>
+                      </li>
+                      <li><span class="title">Item Size</span>
+                      </li>
+                      <li><span class="title">Item Color</span>
+                      </li>
+                      <li><span class="title">Item Material</span>
+                      </li>
+                      <li><span class="title">Item Attributes</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <ul id="m-sett-str" class="collapse list-unstyled level2">
+                    <li>
+                      <span class="title">Companies</span>
+                    </li>
+                    <li>
+                      <span class="title">Sites</span>
+                    </li>
+                    <li>
+                      <span class="title">Warehouses</span>
+                    </li>
+                    <li>
+                      <span class="title">Stores</span>
+                    </li>
+                  </ul>
+                </li>
+ 
+      
+
+          
+          </ul> -->
+        </div>
+      
+
+
+
+
+        <!----------------Main Content---------------------------->
+        <div id="content">
+          
+          <!-- Dismissable ALert
+            <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <p>
+              General Error / Success Notification goes here. <br/> For forms, it's better to show each error on the form fields instead of here for better user experience.
+            </p>
+          </div> -->
+      
+          <!----------------Dashboard---------------------------->
+          <div id="c-dashboard" class="content-panel">
+            <h1>Dashboard</h1>
+
+            <div class="controls">
+              <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search for items...">
+                <button class="btn btn-info searchBtn" onclick="searchTable()"><i class="fa fa-filter"></i> Search</button>
+              </div>
+              <div class="button-container">
+                <button id="c-item-new" class="btn btn-success" data-toggle="content-panel" data-target="#c-item-form"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;Add Item</button>
+              <button class="btn btn-info searchBtn" data-toggle="collapse" data-target="#c-item-filter-opt"><i class="fa fa-filter"></i> Filter</button>
+            </div>
+            </div>
+
+            <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="card">
+          <i class="fa fa-thermometer-half"></i>
+          <h4>Total Items</h4>
+          <p id="total-items">0</p>
+      </div>
+      <div class="card">
+          <i class="fa fa-drumstick-bite"></i>
+          <h4>Chicken</h4>
+          <p id="total-chicken">0</p>
+      </div>
+      <div class="card">
+          <i class="fa fa-steak"></i>
+          <h4>Beef</h4>
+          <p id="total-beef">0</p>
+      </div>
+      <div class="card">
+          <i class="fa fa-carrot"></i>
+          <h4>Vegetables</h4>
+          <p id="total-vegetables">0</p>
+      </div>
+      <div class="card">
+          <i class="fa fa-apple-alt"></i>
+          <h4>Fruits</h4>
+          <p id="total-fruits">0</p>
+      </div>
+  </div>
+
+  <!-- Oldest Items Section -->
+  <div class="section-title">Oldest Items in Freezer</div>
+  <div class="item-list">
+      <table>
+          <thead>
+              <tr>
+                  <th>Item Name</th>
+                  <th>Date Added</th>
+                  <th>Quantity</th>
+              </tr>
+          </thead>
+          <tbody id="oldest-items-list">
+              <!-- Oldest items will be inserted here -->
+          </tbody>
+      </table>
+  </div>
+
+  <!-- Soon-to-Expire Section -->
+  <div class="section-title">Soon-to-Expire Items</div>
+  <div class="item-list">
+      <table>
+          <thead>
+              <tr>
+                  <th>Item Name</th>
+                  <th>Date Added</th>
+                  <th>Quantity</th>
+              </tr>
+          </thead>
+          <tbody id="soon-expire-list">
+              <!-- Soon-to-expire items will be inserted here -->
+          </tbody>
+      </table>
+  </div>
+
+  <!-- Chart for Visual Breakdown -->
+  <div class="section-title">Freezer Inventory Breakdown</div>
+  <div class="chart-container">
+      <canvas id="inventoryChart"></canvas>
+  </div>
 
 
 
 
 
+          </div>
+      
+          <!----------------Items---------------------------->
+          <div id="c-item-list" class="content-panel">
+            <h1>Items</h1>
+      
+            <!-- <br/> -->
 
-    <script type="text/javascript" src="mainJS.js"></script>
-    <!-- *********************************Firebase User Auth********************************************************** -->
-<script src="https://www.gstatic.com/firebasejs/ui/4.7.1/firebase-ui-auth.js"></script>
-<link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.7.1/firebase-ui-auth.css" />
-<script type="text/javascript">
-  // FirebaseUI config.
-  var uiConfig = {
-    signInSuccessUrl: "myEvents.html",
-    signInOptions: [
-      // Leave the lines as is for the providers you want to offer your users.
-      firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    ],
-    // tosUrl and privacyPolicyUrl accept either url string or a callback
-    // function.
-    // Terms of service url/callback.
-    tosUrl: '<your-tos-url>',
-    // Privacy policy url/callback.
-    privacyPolicyUrl: function() {
-      window.location.assign('<your-privacy-policy-url>');
-    }
-  };
+            <div class="controls">
+              <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search for items...">
+                <button class="btn btn-info searchBtn" onclick="searchTable()"><i class="fa fa-filter"></i> Search</button>
+              </div>
+              <div class="button-container">
+                <button id="c-item-new" class="btn btn-success" data-toggle="content-panel" data-target="#c-item-form"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;Add Item</button>
+              <button class="btn btn-info searchBtn" data-toggle="collapse" data-target="#c-item-filter-opt"><i class="fa fa-filter"></i> Filter</button>
+            </div>
+            </div>
+      
+            <!-- FIlter section -->
+            <div id="c-item-filter" class="filter-area">
+              <div id="c-item-filter-opt" class="collapse filter-container">
 
-  // Initialize the FirebaseUI Widget using Firebase.
-  var ui = new firebaseui.auth.AuthUI(firebase.auth());
-  // The start method will wait until the DOM is loaded.
-  ui.start('#firebaseui-auth-container', uiConfig);
-  logOut.addEventListener('click', e => {
-  firebase.auth().signOut();
-  console.log("signed Out")
-  window.location.replace("index.html")
-  });
-</script>
+                <div class="col">
+                  <div class="form-group">
+                    <label class="control-label">
+                      Filter by Item Type:
+                    </label>
+                    <select id="tagFilter" onchange="filterByTag()">
+                    <option value="">All</option> <!-- This option will show all items -->
+                    <option value="Chicken">Chicken</option>
+                    <option value="Beef">Beef</option>
+                    <option value="Vegetable">Vegetable</option>
+                    <option value="Fruit">Fruit</option>
+                    <option value="Dessert">Dessert</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Dairy">Dairy</option>
+                    <option value="Other">Other</option>
+                    </select>
+                </div>
+              </div>
+
+              <!-- <div class="col-md-6">
+                <div class="form-group">
+                  <label class="control-label">
+                    Item Group
+                  </label>
+                  <select class="form-control"          >
+                    <option>All</option>
+                    <option>Raw Material</option>
+                    <option>Semi-finished Goods</option>
+                    <option>Finished Goods</option>
+                  </select>
+                </div>
+              </div> -->
+      
+              <div class="clearfix"></div>
+      
+              <div class="text-right col-xs-12 no-float">
+                <button class="btn btn-primary">Apply Filter</button>
+              </div>
+            </div>
+          </div>
+      
+          <div class="table-responsive">
+            <table id="c-item-table" class="responsive">
+              <thead>
+                <tr>
+                  <td>Item Name</td>
+                  <td>Item Type</td>
+                  <td>Date Added</td>
+                  <td>Quantity</td>
+                  <td>Action</td>
+                  <td>Notes</td>
+                </tr>
+              </thead>
+            </table>
+          </div>
+      
+          <div >
+          </div>
+        </div>
+      
+
+        <!----------------Add Item---------------------------->
+        <div id="c-item-form" class="content-panel">
+          <a class="menu-link" id="sm-item" data-toggle="content-panel" data-target="#c-item-list">
+            <span><i class="fa fa-book fa-fw"></i></span>
+            <span class="title" >Cancel</span>
+          </a>
+          <h1>Add Item</h1>
+      
+      
+
+          <div class="form">
+      
+            <!--Tabs
+            <ul class="responsive-tabs nav nav-tabs hidden-s">
+              <li class="active"><a href="#i-general" data-toggle="tab">General Information</a></li>
+              <li><a href="#i-sales" data-toggle="tab">Sales Information</a></li> 
+            </ul> -->
+      
+            <!--Info/Content Containers-->
+            <div class="tab-content clearfix">
+
+
+            <!--Tabs-->
+              <div class="tab-pane active" id="i-general" class="">          
+                <div class="row">
+                  <div class="col-lg-12 ">
+                    
+                    <div class="form-group">
+                      <label class="control-label">Item Name *</label>
+                      <div class="">
+                        <input type="text" class="form-control" id="newItemName"/>
+                      </div>
+                    </div>  
+
+                                        <!--ITEM TYPE-->
+                                        <div class="form-group">
+                                            <label class="control-label">Item Type *</label>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                BEEF
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                STEAK
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                CHICKEN
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                VEGETABLE
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                FRUIT
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                PREPPED INGREDIENT
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                DESSERT
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                QUICK LUNCH ITEM
+                                              </label>
+                                            </div>
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value="">
+                                                DAIRY
+                                              </label>
+                                            </div>
+                      
+                      
+                                            <div class="checkbox">
+                                              <label>
+                                                <input type="checkbox" value=""id="otherCheckbox" onclick="toggleOther()">
+                                                OTHER
+                                              </label>
+                                              <div class="" id="otherText" style="display:none;">
+                                                  <input type="text" class="form-control" id="otherInput"/>
+                                                </div>
+                                            </div>
+                                          </div>
+      
+                    <!-- <div class="form-group">
+                      <label class="control-label">Fresh or Frozen *</label>
+                      <div class="clearfix"></div>
+                      <div class="radio-inline">
+                        <label class=""><input type="radio" name="itm-grp" checked /><span class="vmid">Fresh</span></label>
+                      </div>
+                      <div class="radio-inline">
+                        <label class=""><input type="radio" name="itm-grp" id="frozen-btn"/><span class="vmid">Frozen</span></label>
+                      </div>
+                    </div>   -->
+       
+
+                    <div class="form-group">
+                        <label class="control-label">Date Added</label>
+                        <div class="input-group dt-field">
+                          <input type="date" class=" form-control" placeholder="YYYY/MM/DD" id="dateAddedInput"/>
+                      </div>
+                      </div>
+      
+      
+                      <div class="form-group">
+                        <label class="control-label">Quantity</label>
+                        <div class="">
+                          <input type="text" class="form-control" id="quantityInput"/>
+                        </div>
+                      </div>  
+
+                    <div class="form-group">
+                        <label class="control-label">Notes</label>
+                        <div class="">
+                          <textarea rows=3 id="notesTextarea"></textarea>
+                        </div>
+                      </div>  
+                    
+
+
+                  <!--  <div class="form-group">
+                      <label class="control-label">Image *</label>
+                      <input type="file" />
+                    </div> -->
+      
+                  </div>
+      
+
+                  <div class="clearfix"></div>
+                </div>
+      
+                <div class="add-item-button-wrapper">
+                    <button class="btn btn-success submit-btn" onclick="createItem()">Submit</button>
+
+                </div>
+
+              </div>
+      
+             <!---- <div class="tab-pane" id="i-sales">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h4>Properties</h4>
+                    <hr/>
+      
+                    <div class="form-group">
+                      <label class="control-label">Date</label>
+                      <div class="input-group dt-field">
+                        <input type="text" class=" form-control" placeholder="YYYY/MM/DD"/>
+      
+                        <div class="input-group-addon">
+                          <span><i class="fa fa-calendar fa-fw"></i></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Brand *</label>
+                      <div class="col-xs-12 no-float input-group">
+                        <input type="text" class="form-control" />
+                        <div class="input-group-btn input-group-separate-btn">                  
+                          <button class="btn btn-info"><i class="fa fa-search"></i></button>
+                        </div>
+                        <div class="clearfix"></div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Unit of Measure</label>
+                      <input type="text" readonly class="form-control" value="EA"/>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <h4>Pricing</h4>
+                    <hr/>
+      
+                    <div class="row">
+                      <div class="col-xs-7">
+                        <div class="form-group">
+                          <label class="control-label">Tax Code</label>
+                          <select class="form-control">
+                            <option>TX005 - VAT 10%</option>
+                            <option>TX006 - VAT 0%</option>
+                            <option>TX009 - Luxury Tax 20%</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="col-xs-5">
+                        <div class="form-group">
+                          <label class="control-label">Tax Rate</label>
+                          <input type="text" class="form-control" readonly />
+                        </div>
+                      </div>
+                      <div class="clearfix"></div>
+                    </div>  
+      
+                    <div class="form-group">
+                      <label class="control-label">Base Selling Price *</label>
+                      <div class="input-group">
+                        <div class="input-group-addon">USD</div>
+                        <input type="text" class="form-control" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label">Base Selling Price with Tax</label>
+                      <input type="text" class="form-control" readonly />
+                    </div>
+                    <div class="clearfix"></div>
+                  </div>            
+      
+                  <div class="clearfix"></div>
+                </div>
+      
+                <br/>
+                <div>
+                  <h4>Description</h4>
+                  <hr/>
+      
+                  <div class="form-group has-error">
+                    <label class="control-label">Item Title *</label>
+                    <p class="small">Item Title is required.</p>
+                    <input class="form-control" type="text" />
+                  </div>
+      
+                  <div class="form-group">
+                    <label class-"control-label">item Description</label>
+                    <textarea class="form-control" rows="4"></textarea>
+                  </div>
+      
+                  <div class="form-group">
+                    <label class="control-label">Images</label>
+                    <input type="file" />
+                  </div>
+                </div>
+      
+                <br/>
+                <div>
+                  <h4>Attributes</h4>
+                  <hr/>
+      
+                  <div class="form-group">
+                    <label class="control-label">Gender</label>
+                    <select class="form-control">
+                      <option>Female</option>
+                      <option>Male</option>
+                      <option>Unisex</option>
+                    </select>
+                  </div>
+      
+                  <div class="form-group">
+                    <label class-"control-label">Material</label>
+                    <input class="form-control" type="text" />
+                  </div>
+      
+                  <div class="form-group">
+                    <label class="control-label">Additional Attribute</label>
+      
+                    <button class="btn btn-xs btn-success"><i class="fa fa-plus"></i></button>
+                    <div>
+                      <table class="table">
+                        <tr>
+                          <td width="50">1</td>
+                          <td>
+                            <select class="form-control">
+                              <option>Size</option>
+                              <option>Size</option>
+                              <option>Size</option>
+                            </select>
+                          </td>
+                          <td>
+                            <select class="form-control">
+                              <option>2GB</option>
+                              <option>500GB</option>
+                              <option>2TB</option>
+                            </select>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+      
+      
+            </div>
+      
+          </div>
+        </div>
+      
+        <div id="footer" class="small text-center">
+          Copyright 2024. Designed by Riley Griffis.
+        </div>
+      
+      </div>
+      
+      </div>
+       
+      
+    <script type="text/javascript" src="mainScript.js"></script>
+    <script type="text/javascript" src="db-functions.js"></script>
 </body>
 </html>

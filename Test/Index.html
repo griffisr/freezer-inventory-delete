@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FREEZER INVENTORY</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        #searchContainer {
+            margin-bottom: 20px;
+        }
+    </style>
+    <link rel='stylesheet' type="text/css" href='main.css' media='all' />
+
+
+    <!--Initialize Firebase-->
+<script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.2/firebase-auth.js"></script>
+</head>
+<body>
+    <h2>Freezer Inventory</h2>
+    
+    <!-- Search bar component -->
+    <div id="searchContainer">
+        <label for="searchInput">Search Item:</label>
+        <input type="text" id="searchInput" list="suggestions" oninput="filterTable()" placeholder="Type here to search...">
+        <datalist id="suggestions">
+            <!-- Suggestions will be dynamically inserted here -->
+        </datalist>
+        <button onclick="submitSearch()">Submit</button>
+    </div>
+
+    <div class="table-wrapper">
+    <!-- Table to display JSON data -->
+    <table id="jsonTable">
+        <!-- JSON data will be inserted here dynamically -->
+    </table>
+    </div>
+
+
+
+
+
+
+    <script type="text/javascript" src="mainJS.js"></script>
+    <!-- *********************************Firebase User Auth********************************************************** -->
+<script src="https://www.gstatic.com/firebasejs/ui/4.7.1/firebase-ui-auth.js"></script>
+<link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.7.1/firebase-ui-auth.css" />
+<script type="text/javascript">
+  // FirebaseUI config.
+  var uiConfig = {
+    signInSuccessUrl: "myEvents.html",
+    signInOptions: [
+      // Leave the lines as is for the providers you want to offer your users.
+      firebase.auth.EmailAuthProvider.PROVIDER_ID,
+    ],
+    // tosUrl and privacyPolicyUrl accept either url string or a callback
+    // function.
+    // Terms of service url/callback.
+    tosUrl: '<your-tos-url>',
+    // Privacy policy url/callback.
+    privacyPolicyUrl: function() {
+      window.location.assign('<your-privacy-policy-url>');
+    }
+  };
+
+  // Initialize the FirebaseUI Widget using Firebase.
+  var ui = new firebaseui.auth.AuthUI(firebase.auth());
+  // The start method will wait until the DOM is loaded.
+  ui.start('#firebaseui-auth-container', uiConfig);
+  logOut.addEventListener('click', e => {
+  firebase.auth().signOut();
+  console.log("signed Out")
+  window.location.replace("index.html")
+  });
+</script>
+</body>
+</html>
