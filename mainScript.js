@@ -3,16 +3,16 @@ var $sidebar = $('#sidebar'),
     $body = $('#body'),
     $window = $(window);
 
-// if($window.width() < 768){
-//   if($sidebar.hasClass('opened')){
-//     $sidebar.animate({
-//       left: -266
-//     }, 250).removeClass('opened');
-//     $body.animate({
-//       'padding-left' : 0
-//     }, 250);
-//   }
-// } 
+if($window.width() < 768){
+  if($sidebar.hasClass('opened')){
+    $sidebar.animate({
+      left: -266
+    }, 250).removeClass('opened');
+    $body.animate({
+      'padding-left' : 0
+    }, 250);
+  }
+} 
 function toggleOther() {
     var otherText = document.getElementById("otherText");
     var otherCheckbox = document.getElementById("otherCheckbox");
@@ -58,8 +58,15 @@ $('.content-panel').css({
   'display' : 'none'
 });
 
-$('#c-item-list').fadeIn().addClass('active');
 
+// Set primary tab/page////////////////////////////////
+$('#c-item-list').fadeIn().addClass('active');
+function togglePage(targetPanel) {
+
+  $('.content-panel.active').fadeOut().removeClass('active');
+  $(targetPanel).fadeIn().addClass('active');
+
+}
 $('[data-toggle=content-panel]').on('click', function(){
   var $this = $(this),
       $target = $($this.data('target'));

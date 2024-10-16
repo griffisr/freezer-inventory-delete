@@ -24,16 +24,10 @@ const firebaseConfig = {
       newEventBtn.classList.add('hide');
     }
   });
-  let totalItems = 0;
-  let chickenCount = 0;
-  let beefCount = 0;
-  let vegetablesCount = 0;
-  let fruitsCount = 0;
-  let oldestItems = [];
-  let soonExpireItems = [];
   // Fetch and Display Data (Initialize DataTable after fetching)
   $(document).ready(function () {
     fetchAndDisplayData();
+    fetchDashboardData(); // Fetch dashboard data for the overview
   });
   
   function fetchAndDisplayData() {
@@ -96,6 +90,7 @@ const firebaseConfig = {
   }
 // EDIT ITEM
   function editItem(itemName) {
+    console.log(itemName)
     const itemRef = database.ref("users/Riley/" + itemName);
   
     // Fetch the item from Firebase
@@ -109,13 +104,6 @@ const firebaseConfig = {
         document.getElementById("notesTextarea").value = itemData.notes || "";
         document.getElementById("dateAddedInput").value = itemData.dateAdded;
   
-        // Set the radio button for Fresh/Frozen
-        if (itemData.freshOrFrozen === "Frozen") {
-          document.getElementById("frozen-btn").checked = true;
-        } else {
-          document.getElementById("fresh-btn").checked = true;
-        }
-  
         // Set checkboxes for Item Types
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
@@ -125,7 +113,8 @@ const firebaseConfig = {
         // Delete the old item from Firebase
         itemRef.remove().then(() => {
           alert(`Editing "${itemName}". Make changes and click 'Add' to save.`);
-          triggerPanelSwitch('#c-item-form');
+          $('.content-panel.active').fadeOut().removeClass('active');
+          $('#c-item-form').fadeIn().addClass('active');
         }).catch(error => {
           console.error("Error deleting item:", error);
         });
@@ -157,54 +146,105 @@ const firebaseConfig = {
   }
 
   
-  
+// // Fetch and pre-fill form fields when editing an item
+// function editItem(itemName) {
+//   const itemRef = database.ref("users/Riley/" + itemName);
 
+//   // Fetch the item from Firebase
+//   itemRef.once('value').then(function(snapshot) {
+//       const itemData = snapshot.val();
 
+//       if (itemData) {
+//           // Fill the form fields with the item data
+//           document.getElementById("newItemName").value = itemData.itemName;
+//           document.getElementById("quantityInput").value = itemData.quantity;
+//           document.getElementById("notesTextarea").value = itemData.notes || "";
+//           document.getElementById("dateAddedInput").value = itemData.dateAdded;
 
+//           // Set the radio button for Fresh/Frozen
+//           if (itemData.freshOrFrozen === "Frozen") {
+//               document.getElementById("frozen-btn").checked = true;
+//           } else {
+//               document.getElementById("fresh-btn").checked = true;
+//           }
 
+//           // Set checkboxes for Item Types
+//           const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+//           checkboxes.forEach(checkbox => {
+//               checkbox.checked = itemData.itemType.includes(checkbox.nextSibling.textContent.trim());
+//           });
 
+//           // Store the current item name for the update
+//           document.getElementById("currentItemName").value = itemName;
 
+//           // Change the "Add" button text to "Update"
+//           document.getElementById("submitButton").innerText = "Update Item";
+//       }
+//   }).catch(function(error) {
+//       console.error("Error fetching item:", error);
+//   });
+// }
 
-// Create ITEM
-  function createItem() {
-    const itemName = document.getElementById("newItemName").value.trim();
-    const quantity = document.getElementById("quantityInput").value.trim();
-    const notes = document.getElementById("notesTextarea").value.trim();
-    const dateAdded = document.getElementById("dateAddedInput").value;
-    
-    let freshOrFrozen = document.querySelector('input[id="frozen-btn"]:checked') ? "Frozen" : "Fresh";
-    
-    const itemType = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
+// Update the item when the "Update" button is clicked
+function createItem() {
+  const itemName = document.getElementById("newItemName").value.trim();
+  const quantity = document.getElementById("quantityInput").value.trim();
+  const notes = document.getElementById("notesTextarea").value.trim();
+  const dateAdded = document.getElementById("dateAddedInput").value;
+
+  let freshOrFrozen = document.querySelector('input[id="frozen-btn"]:checked') ? "Frozen" : "Fresh";
+
+  const itemType = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
       .map(checkbox => checkbox.nextSibling.textContent.trim());
-  
-    if (!itemName) {
+
+  // Get the current item name if editing
+  const currentItemName = document.getElementById("currentItemName").value;
+
+  if (!itemName) {
       alert("Please enter an item name!");
       return;
-    }
-  
-    // Store data in Firebase
-    firebase.database().ref(`users/Riley/${itemName}`).set({
+  }
+
+  // Check if we are updating an existing item or adding a new one
+  const databaseRef = currentItemName ? database.ref(`users/Riley/${currentItemName}`) : database.ref(`users/Riley/${itemName}`);
+
+  // Store data in Firebase
+  databaseRef.set({
       itemName,
       freshOrFrozen,
       dateAdded,
       quantity,
       notes,
       itemType
-    }).then(() => {
-      alert("Item Added");
+  }).then(() => {
+      alert(currentItemName ? "Item Updated" : "Item Added");
       clearFormInputs();
-      
-      // Fetch and update the table after the new item is successfully added
+
+      // Fetch and update the table after the item is updated/added
       $('#c-item-table').DataTable().destroy();
-      fetchAndDisplayData(); // Call the function to refresh the table
-      triggerPanelSwitch('#c-item-list');
-    }).catch(error => {
+      fetchAndDisplayData(); // Refresh the table
+
+      // Reset the form to its default state
+      document.getElementById("submitButton").innerText = "Add Item";
+      document.getElementById("currentItemName").value = "";
+      triggerPanelSwitch('#c-item-list'); // Switch back to the item list panel
+  }).catch(error => {
       console.error("Error uploading item:", error);
-    });
-  }
+  });
+}
 
-
-
+// Clear form inputs and reset for new item addition
+function clearFormInputs() {
+  document.getElementById("newItemName").value = "";
+  document.getElementById("quantityInput").value = "";
+  document.getElementById("notesTextarea").value = "";
+  document.getElementById("dateAddedInput").value = "";
+  document.getElementById("currentItemName").value = "";  // Clear the current item for editing
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+      checkbox.checked = false;
+  });
+}
 
 
   // Function to trigger the panel switch using the data-toggle behavior
@@ -220,17 +260,10 @@ function triggerPanelSwitch(targetPanel) {
     }
   }
   
-  // Clear Input Fields After Adding Item
-  function clearFormInputs() {
-    document.getElementById("newItemName").value = "";
-    document.getElementById("quantityInput").value = "";
-    document.getElementById("notesTextarea").value = "";
-    document.getElementById("dateAddedInput").value = "";
-  }
-  
+
   
   // Search Function for DataTable
-  function searchTable() {
+  function searchTable(searchValue) {
     const input = document.getElementById("searchInput").value.toUpperCase();
     const table = document.getElementById("c-item-table");
     const tr = table.getElementsByTagName("tr");
@@ -249,6 +282,261 @@ function triggerPanelSwitch(targetPanel) {
     });
   }
   
+
+
+
+  function togglePageAndFilter(tag) {
+    // Switch to the #c-item-list page
+    togglePage('#c-item-list');
+    document.documentElement.scrollTop = 0; // For most browsers
+    document.body.scrollTop = 0; // For Safari
+
+    console.log(tag)
+    // Apply the filter after the page is switched
+    const table = document.getElementById("c-item-table");
+    const rows = table.getElementsByTagName("tr"); // Get all rows of the table
+
+    // Loop through all rows of the table and filter by the selected tag
+    for (let i = 1; i < rows.length; i++) { // Start at index 1 to skip the header row
+        const itemTypeCell = rows[i].getElementsByTagName("td")[1]; // Assuming item type is in column 1
+        if (itemTypeCell) {
+            const itemType = itemTypeCell.textContent || itemTypeCell.innerText;
+
+            // If the row matches the selected tag, show the row, otherwise hide it
+            if (itemType.toLowerCase().includes(tag.toLowerCase())) {
+                rows[i].style.display = ""; // Show the row
+            } else {
+                rows[i].style.display = "none"; // Hide the row
+            }
+        }
+    }
+}
+
+
+  function filterByTag() {
+    const selectedTag = document.getElementById("tagFilter").value.toLowerCase();
+    const table = document.getElementById("c-item-table");
+    const rows = table.getElementsByTagName("tr"); // Get all rows of the table
+
+    // Loop through all rows of the table
+    for (let i = 1; i < rows.length; i++) { // Start at index 1 to skip the header row
+        const itemTypeCell = rows[i].getElementsByTagName("td")[1]; // Assuming item type is in column 1
+        if (itemTypeCell) {
+            const itemType = itemTypeCell.textContent || itemTypeCell.innerText;
+
+            // If "All" is selected or the row matches the selected tag, show the row, otherwise hide it
+            if (!selectedTag || itemType.toLowerCase().includes(selectedTag)) {
+                rows[i].style.display = ""; // Show the row
+            } else {
+                rows[i].style.display = "none"; // Hide the row
+            }
+        }
+    }
+}
+
+
+
+
+
+
+// Global Variables
+let totalItems = 0;
+let chickenCount = 0;
+let beefCount = 0;
+let vegetablesCount = 0;
+let fruitsCount = 0;
+let preppedIngredientCount = 0;
+let dessertCount = 0;
+let lunchItemCount = 0;
+let dairyCount = 0;
+let otherCount = 0;
+let oldestItems = [];
+let soonExpireItems = [];
+
+// Dashboard Functions
+// Fetch dashboard data for overview stats, charts, and lists
+function fetchDashboardData() {
+  const dataRef = database.ref("users/Riley");
+  dataRef.once('value', function (snapshot) {
+      snapshot.forEach(function (childSnapshot) {
+          const item = childSnapshot.val();
+          const itemType = item.itemType || [];
+          const dateAdded = item.dateAdded;
+          const quantity = item.quantity || 0;
+
+          // Update the total item count
+          totalItems += parseInt(quantity, 10);
+
+          // Update category counts
+          itemType.forEach(type => {
+              if (type.includes('CHICKEN')) chickenCount += parseInt(quantity, 10);
+              else if (type.includes('BEEF')) beefCount += parseInt(quantity, 10);
+              else if (type.includes('VEGETABLE')) vegetablesCount += parseInt(quantity, 10);
+              else if (type.includes('FRUIT')) fruitsCount += parseInt(quantity, 10);
+              else if (type.includes('PREPPED INGREDIENT')) preppedIngredientCount += parseInt(quantity, 10);
+              else if (type.includes('DESSERT')) dessertCount += parseInt(quantity, 10);
+              else if (type.includes('QUICK LUNCH ITEM')) lunchItemCount += parseInt(quantity, 10);
+              else if (type.includes('DAIRY')) dairyCount += parseInt(quantity, 10);
+              else otherCount += parseInt(quantity, 10);
+          });
+
+          // Add to oldest or soon-to-expire items
+          const itemDate = new Date(dateAdded);
+          const today = new Date();
+          const daysDiff = Math.floor((today - itemDate) / (1000 * 60 * 60 * 24));
+
+          if (daysDiff > 180) {
+              soonExpireItems.push({ name: item.itemName, dateAdded, quantity });
+          } else {
+              oldestItems.push({ name: item.itemName, dateAdded, quantity });
+          }
+      });
+
+      // Update the dashboard summary cards (check if elements exist first)
+      if (document.getElementById('total-items')) {
+          document.getElementById('total-items').innerText = totalItems;
+      }
+      if (document.getElementById('total-chicken')) {
+          document.getElementById('total-chicken').innerText = chickenCount;
+      }
+      if (document.getElementById('total-beef')) {
+          document.getElementById('total-beef').innerText = beefCount;
+      }
+      if (document.getElementById('total-vegetables')) {
+          document.getElementById('total-vegetables').innerText = vegetablesCount;
+      }
+      if (document.getElementById('total-fruits')) {
+          document.getElementById('total-fruits').innerText = fruitsCount;
+      }
+      if (document.getElementById('total-prepped-ingredient')) {
+          document.getElementById('total-prepped-ingredient').innerText = preppedIngredientCount;
+      }
+      if (document.getElementById('total-dessert')) {
+          document.getElementById('total-dessert').innerText = dessertCount;
+      }
+      if (document.getElementById('total-lunch-item')) {
+          document.getElementById('total-lunch-item').innerText = lunchItemCount;
+      }
+      if (document.getElementById('total-dairy')) {
+          document.getElementById('total-dairy').innerText = dairyCount;
+      }
+      if (document.getElementById('total-other')) {
+          document.getElementById('total-other').innerText = otherCount;
+      }
+
+      // Render tables and charts
+      renderOldestItems();
+      renderSoonExpireItems();
+      renderInventoryChart();
+      
+  });
+}
+
+// Render Oldest Items Table
+function renderOldestItems() {
+  const oldestItemsTable = document.getElementById('oldest-items-list');
+  oldestItemsTable.innerHTML = ''; // Clear existing data
+  oldestItems.forEach(item => {
+      const row = `<tr><td>${item.name}</td><td>${formatDate(item.dateAdded)}</td><td>${item.quantity}</td></tr>`;
+      oldestItemsTable.innerHTML += row;
+  });
+}
+
+// Render Soon-to-Expire Items Table
+function renderSoonExpireItems() {
+  const soonExpireTable = document.getElementById('soon-expire-list');
+  soonExpireTable.innerHTML = ''; // Clear existing data
+  soonExpireItems.forEach(item => {
+      const row = `<tr><td>${item.name}</td><td>${formatDate(item.dateAdded)}</td><td>${item.quantity}</td></tr>`;
+      soonExpireTable.innerHTML += row;
+  });
+}
+
+// Render Pie Chart and Display Labels Next to It
+function renderInventoryChart() {
+  const ctx = document.getElementById('inventoryChart').getContext('2d');
+  const totalItemsForChart = chickenCount + beefCount + vegetablesCount + fruitsCount + preppedIngredientCount + dessertCount + lunchItemCount + dairyCount + otherCount;
+
+  // Update the total items above the chart
+  document.getElementById('total-items-chart').innerText = totalItemsForChart;
+
+  const data = [chickenCount, beefCount, vegetablesCount, fruitsCount, preppedIngredientCount, dessertCount, lunchItemCount, dairyCount, otherCount];
+  const labels = ['Chicken', 'Beef', 'Vegetables', 'Fruits', 'Prepped Ingredients', 'Desserts', 'Quick Lunch Items', 'Dairy', 'Other'];
+  const colors = ['tomato', 'saddlebrown', 'green', 'orange', 'darksalmon', 'black', 'blueviolet', 'lightskyblue', 'gray'];
+
+  new Chart(ctx, {
+      type: 'pie',
+      data: {
+          labels: labels,
+          datasets: [{
+              label: 'Inventory Breakdown',
+              data: data,
+              backgroundColor: colors,
+          }]
+      },
+      options: {
+          // responsive: true,
+          plugins: {
+              legend: {
+                  display: false, // Disable default legend to create custom one
+              }
+          }
+      }
+  });
+
+  // Create custom labels to display next to the chart
+  const chartLabelsContainer = document.getElementById('chart-labels');
+  chartLabelsContainer.innerHTML = ''; // Clear previous labels
+
+  labels.forEach((label, index) => {
+      const labelElement = document.createElement('div');
+      labelElement.classList.add('chart-label');
+
+      // Create a color box for the label
+      const colorBox = document.createElement('div');
+      colorBox.classList.add('chart-color-box');
+      colorBox.style.backgroundColor = colors[index];
+
+      // Create the label text
+      const labelText = document.createElement('span');
+      labelText.innerText = `${label}: ${data[index]}`;
+
+      // Append color box and label text
+      labelElement.appendChild(colorBox);
+      labelElement.appendChild(labelText);
+
+      // Append the label element to the container
+      chartLabelsContainer.appendChild(labelElement);
+  });
+}
+
+
+
+// Date formatting utility
+function formatDate(dateString) {
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -340,4 +628,3 @@ function triggerPanelSwitch(targetPanel) {
   document.addEventListener("click", function (e) {
     closeAllLists(e.target);
   });
-  

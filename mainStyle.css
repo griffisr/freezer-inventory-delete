@@ -109,9 +109,7 @@ textarea {
 .searchBtn{
   width: 23%;
 }
-#c-item-new{
-  width: 75%;
-}
+
 .search-container{
   display: flex;
   flex-direction: row;
@@ -126,8 +124,24 @@ textarea {
   justify-content: space-between;
 }
 
+.button-container #c-item-new{
+  width: 75%;
+}
+.dashboard-button-container{
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.dashboard-button-container button{
+  width: 100%;
+  margin-bottom: 5px;
+}
+
 /* Filter section styles */
-#c-item-filter{
+#c-item-form{
+  margin-top: 2rem;
 
 }
 #tagFilter{
@@ -135,7 +149,7 @@ textarea {
 }
 /* General Table Styling */
 #c-item-table {
-  width: 100%;
+  min-width: 100%;
   margin-bottom: 20px;
   border-collapse: collapse;
   table-layout: auto; /* Let the table adjust based on content */
@@ -234,6 +248,7 @@ textarea {
   height: 60px;
   text-align: center;
   margin-right: 10px;
+  padding-top: 10px;
   background: gainsboro;
   color: #222;
 }
@@ -269,6 +284,20 @@ textarea {
   display: inline-block;
   height: 100%;
   margin-bottom: -1rem;
+}
+.header-button-holder{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.dashboard-btn{
+  background-image: linear-gradient(to bottom,#c9b128 0,#df5121 100%)!important;
+  border-color: #c9b128!important;
+  width: 50%;
+  height: inherit;
+  font-size: 150%;
+  padding: 10px 0 10px 0!important;
 }
 
 /* Sidebar Styling */
@@ -311,6 +340,11 @@ textarea {
 #c-item-list{
   padding: 0 1rem 0 1rem;
 }
+#menuList .title{
+  font-size: 200%;
+}
+
+
 /* Footer Styling */
 #footer {
   position: relative;
@@ -412,7 +446,7 @@ textarea {
 }
 
 .item-type.lunch {
-  background-color: yellow;
+  background-color: blueviolet;
   color: white;
   padding: 2px 5px;
   border-radius: 3px;
@@ -445,7 +479,6 @@ textarea {
   flex-wrap: wrap;
   gap: 20px;
 }
-
 .card {
   flex: 1;
   min-width: 220px;
@@ -454,16 +487,23 @@ textarea {
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   text-align: center;
+  align-items: center;
 }
 
 .card h4 {
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   margin-bottom: 10px;
 }
 
 .card i {
-  font-size: 2rem;
+  font-size: 3rem;
   margin-bottom: 10px;
+}
+.card p {
+  font-size: 2.5rem;
+}
+.card svg{
+  width: 100px;
 }
 
 .section-title {
@@ -498,31 +538,67 @@ textarea {
 .chart-container {
   margin: 40px auto;
   max-width: 500px;
+  width: 50%;
+}
+
+
+.inventory-breakdown {
+  text-align: center;
+}
+
+.total-items-display {
+  margin-bottom: 10px;
+}
+.total-items-display h4 {
+  font-size: 150%;
+}
+
+.chart-container-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+ #inventoryChart {
+  max-width: 30vw;
+   max-height: 30vw; 
+} 
+
+.chart-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* padding-left: 20px; */
+}
+
+.chart-labels div {
+  margin-bottom: 8px;
+}
+
+.chart-label {
+  display: flex;
+  align-items: center;
+}
+
+.chart-color-box {
+  width: 15px;
+  height: 15px;
+  margin-right: 8px;
 }
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* Media Queries for Large Devices */
+@media only screen and (min-width: 768px) {
+  .chart-label span{
+    font-size: 200%;
+  }
+  .total-items-display h4 {
+    font-size: 200%;
+  }
+}
 
 
 
@@ -539,6 +615,18 @@ textarea {
 .item-list th, .item-list td {
     font-size: 0.9rem;
 }
+button{
+  font-size: 12px!important;
+  padding: 10px 8px 10px 8px!important;
+}
+.inventory-breakdown{
+  flex-direction: column-reverse;
+}
+
+#inventoryChart {
+  max-width: 50%;
+  max-height: auto;
+} 
 
   
 }
@@ -546,8 +634,9 @@ textarea {
 
 @media only screen and (max-width: 420px) {
   .nav-title {
-    font-size: 40%!important;
+    font-size: 50%!important;
   }
+
 
   
 }
