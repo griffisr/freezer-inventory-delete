@@ -216,7 +216,7 @@
             <div class="controls">
               <div class="dashboard-button-container">
                 <button id="c-item-new" class="btn btn-success" data-toggle="content-panel" data-target="#c-item-form"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;&nbsp;Add Item</button>
-              <button class="btn btn-info" data-toggle="collapse" data-target="#c-item-list" onclick="togglePage('#c-item-list');"><i class="fa fa-barcode"></i> Inventory </button>
+              <button class="btn btn-info" data-toggle="content-panel" data-target="#c-item-list" onclick="togglePage('#c-item-list');"><i class="fa fa-barcode"></i> Inventory </button>
             </div>
             </div>
 
@@ -264,7 +264,7 @@
           </div>
           <div class="card">
             <i class="fa fa-lemon fa-4x"></i>
-            <a onclick="togglePageAndFilter('Fruit');"><h4>Fruit</h4></a>
+            <a onclick="togglePageAndFilter('FRUIT');"><h4>Fruit</h4></a>
               <p id="total-fruits">0</p>
           </div>
           <div class="card">
@@ -332,7 +332,7 @@
           <div id="c-item-list" class="content-panel">
             <div class="header-button-holder">
               <h1>Items</h1> 
-              <button class="dashboard-btn" data-toggle="collapse" data-target="#c-dashboard" onclick="togglePage('#c-dashboard');"><i class="fa fa-barcode"></i> Dashboard </button>
+              <button class="dashboard-btn" data-toggle="content-panel" data-target="#c-dashboard" onclick="togglePage('#c-dashboard');"><i class="fa fa-barcode"></i> Dashboard </button>
             </div>
            
       

@@ -30,10 +30,11 @@ const firebaseConfig = {
     fetchDashboardData(); // Fetch dashboard data for the overview
   });
   
+  let originalData = []; // To store the original unfiltered table data
+
   function fetchAndDisplayData() {
     const dataRef = database.ref("users/Riley");
     const dataArray = [];
-  
     dataRef.once('value', function (snapshot) {
       snapshot.forEach(function (childSnapshot) {
         const childData = childSnapshot.val();
@@ -74,20 +75,30 @@ const firebaseConfig = {
       });
   // Check if the DataTable is already initialized
   if (!$.fn.DataTable.isDataTable('#c-item-table')) {
-
     // Initialize DataTable only if it hasn't been initialized yet
     $('#c-item-table').DataTable({
+      dom: "<'top'>t<'bottom'<<'col-sm-4'i><'col-sm-4'p> <'col-sm-4'l>>>",
       data: dataArray,
       searching: false,    // Disable searching
-      lengthChange: false, // Disable ability to change length of entries
-      pageLength: 5, // Default number of items per page
-      lengthMenu: [5, 10, 25, 50] // Options for number of items per page
+      lengthChange: true, // Disable ability to change length of entries
+      pageLength: 5, /////////////////////////////////////////////////////////////// Default number of items per page
+      lengthMenu: [5, 10, 25, 50, { label: 'All', value: -1 }], // Options for number of items per page
+      // layout: {
+      //   bottomN: lengthChange,
+      // }
     });
+    const table = $('#c-item-table').DataTable();
+    // Store the original data when the table is first initialized
+    originalData = table.rows().data().toArray(); // Save the full dataset
+
   }
   
    
     });
   }
+
+
+
 // EDIT ITEM
   function editItem(itemName) {
     console.log(itemName)
@@ -247,19 +258,15 @@ function clearFormInputs() {
 }
 
 
-  // Function to trigger the panel switch using the data-toggle behavior
-function triggerPanelSwitch(targetPanel) {
-    // Find the link that triggers the target panel
-    const link = document.querySelector(`a[data-target='${targetPanel}']`);
-    
-    if (link) {
-      // Simulate the click event to trigger the data-toggle
-      link.click();
-    } else {
-      console.error('Target panel link not found.');
-    }
-  }
   
+
+
+
+// Searching and filtering functions
+
+
+
+
 
   
   // Search Function for DataTable
@@ -292,47 +299,84 @@ function triggerPanelSwitch(targetPanel) {
     document.body.scrollTop = 0; // For Safari
 
     console.log(tag)
-    // Apply the filter after the page is switched
-    const table = document.getElementById("c-item-table");
-    const rows = table.getElementsByTagName("tr"); // Get all rows of the table
+    // Set the value of the dropdown to 'Beef'
+    document.getElementById("tagFilter").value = tag;
 
-    // Loop through all rows of the table and filter by the selected tag
-    for (let i = 1; i < rows.length; i++) { // Start at index 1 to skip the header row
-        const itemTypeCell = rows[i].getElementsByTagName("td")[1]; // Assuming item type is in column 1
-        if (itemTypeCell) {
-            const itemType = itemTypeCell.textContent || itemTypeCell.innerText;
+    // Alternatively, trigger the 'change' event manually to call the filter function:
+    document.getElementById("tagFilter").dispatchEvent(new Event('change'));
 
-            // If the row matches the selected tag, show the row, otherwise hide it
-            if (itemType.toLowerCase().includes(tag.toLowerCase())) {
-                rows[i].style.display = ""; // Show the row
-            } else {
-                rows[i].style.display = "none"; // Hide the row
-            }
-        }
-    }
+    filterByTag();
+    
 }
 
 
-  function filterByTag() {
-    const selectedTag = document.getElementById("tagFilter").value.toLowerCase();
-    const table = document.getElementById("c-item-table");
-    const rows = table.getElementsByTagName("tr"); // Get all rows of the table
+function filterByTag() {
+  const selectedTag = document.getElementById("tagFilter").value.toLowerCase();
+  const table = $('#c-item-table').DataTable();
 
-    // Loop through all rows of the table
-    for (let i = 1; i < rows.length; i++) { // Start at index 1 to skip the header row
-        const itemTypeCell = rows[i].getElementsByTagName("td")[1]; // Assuming item type is in column 1
-        if (itemTypeCell) {
-            const itemType = itemTypeCell.textContent || itemTypeCell.innerText;
+  // Use originalData for filtering to ensure full dataset is always available
+  let filteredData = [];
 
-            // If "All" is selected or the row matches the selected tag, show the row, otherwise hide it
-            if (!selectedTag || itemType.toLowerCase().includes(selectedTag)) {
-                rows[i].style.display = ""; // Show the row
-            } else {
-                rows[i].style.display = "none"; // Hide the row
-            }
-        }
-    }
+  // If no tag is selected, reset to show all original data
+  if (!selectedTag) {
+      filteredData = originalData;
+  } else {
+      // Filter originalData based on the selected tag
+      filteredData = originalData.filter(rowData => {
+          const itemType = rowData[1].toLowerCase(); // Assuming column 1 is the item type
+          return itemType.includes(selectedTag);
+      });
+  }
+
+  // Destroy the current DataTable instance
+  table.destroy();
+
+  // Reinitialize the DataTable with the filtered data
+  $('#c-item-table').DataTable({
+      dom: "<'top'>t<'bottom'<<'col-sm-4'i><'col-sm-4'p> <'col-sm-4'l>>>",
+      data: filteredData,
+      pageLength: 10, // Reset page length
+      columns: [
+          { title: "Item Name" },
+          { title: "Item Type" },
+          { title: "Date Added" },
+          { title: "Quantity" },
+          { title: "Actions" },
+          { title: "Notes" }
+      ],
+      lengthMenu: [5, 10, 25, 50],
+      searching: false // Disable search since we use custom filters
+  });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -53,7 +53,7 @@ $('#menuToggle').on('click', function(){
 
 });
 
-
+// Sets the default for each page/tab to non-visable so I can set active page 
 $('.content-panel').css({
   'display' : 'none'
 });
@@ -61,12 +61,21 @@ $('.content-panel').css({
 
 // Set primary tab/page////////////////////////////////
 $('#c-item-list').fadeIn().addClass('active');
+
+
+
+
+
 function togglePage(targetPanel) {
+  console.log("inside toggle " + targetPanel)
 
   $('.content-panel.active').fadeOut().removeClass('active');
   $(targetPanel).fadeIn().addClass('active');
 
 }
+
+
+
 $('[data-toggle=content-panel]').on('click', function(){
   var $this = $(this),
       $target = $($this.data('target'));
@@ -77,6 +86,25 @@ $('[data-toggle=content-panel]').on('click', function(){
     $target.fadeIn().addClass('active');
   }
 });
+
+
+
+
+  // Function to trigger the panel switch using the data-toggle behavior
+  function triggerPanelSwitch(targetPanel) {
+    // Find the link that triggers the target panel
+    const link = document.querySelector(`a[data-target='${targetPanel}']`);
+    
+    if (link) {
+      // Simulate the click event to trigger the data-toggle
+      console.log(link)
+      link.click();
+    } else {
+      console.error('Target panel link not found.');
+    }
+  }
+
+
 
 
 $('.dt-field').datetimepicker({
